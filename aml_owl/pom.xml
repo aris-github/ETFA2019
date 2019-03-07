@@ -8,6 +8,7 @@
   <properties>
   	<maven.compiler.target>1.8</maven.compiler.target>
     <maven.compiler.source>1.8</maven.compiler.source>
+	<!--  <slf4jVersion>1.7.25</slf4jVersion>-->    
   </properties>
   
   <dependencies>
@@ -59,6 +60,20 @@
 	      	<artifactId>aml_io</artifactId>
 	     	<version>0.0.1-SNAPSHOT</version>
 	    	</dependency>
+	  	    	
+	    	<!-- 
+		<dependency>
+		    <groupId>org.apache.logging.log4j</groupId>
+		    <artifactId>log4j-core</artifactId>
+		    <version>2.11.2</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.apache.logging.log4j</groupId>
+		    <artifactId>log4j-api</artifactId>
+		    <version>2.11.2</version>
+		</dependency>
+		-->	
 	    
   </dependencies>
 </project>

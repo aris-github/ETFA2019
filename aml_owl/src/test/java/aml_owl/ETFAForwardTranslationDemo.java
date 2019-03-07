@@ -31,7 +31,6 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 public class ETFAForwardTranslationDemo {
 
 	static OWLDataFactory dataFactory = new OWLDataFactoryImpl();
-//	private static OWLObjectRenderer renderer = StringRenderer.getRenderer();
 	private static OWLObjectRenderer renderer = new DLSyntaxObjectRenderer();
 
 	// classes
@@ -169,14 +168,12 @@ public class ETFAForwardTranslationDemo {
 		List<AMLConceptTree> trees = new ArrayList<AMLConceptTree>();
 		for(AMLConceptTree expanded : expandedTrees) {		
 
-			System.err.println("\n1.1. The AND-tree [" + i + "] \n");
-			System.out.println(expanded.toString());
-			System.out.flush();
+			System.out.println("\n1.1. The AND-tree [" + i + "] \n");
+			System.out.println(expanded.toStringWithIndent(3));
 
 			AMLConceptTree noInverse = expanded.removeInverseRole();			
-			System.err.println("\n1.2. removed inverse roles [" +  i +  "] \n");
-			System.out.println(noInverse.toString());
-			System.out.flush();
+			System.out.println("\n1.2. removed inverse roles [" +  i +  "] \n");
+			System.out.println(noInverse.toStringWithIndent(3));
 
 			trees.add(noInverse);
 		}
@@ -204,12 +201,10 @@ public class ETFAForwardTranslationDemo {
 				className = "ETFA_E";
 			
 			System.out.print("====================================== " + className + " ======================================\n");
-			System.out.flush();
 			
-			System.err.println("1. First, we show the result (AML Concept Model) of the forward translation of the class " + className + "\n");
-			System.out.println("original owl class:\n\t " + renderer.render(tester.getETFAClasses().get(i)));
-			System.out.println("nnf:\n\t " + renderer.render(tester.getETFAClasses().get(i).getNNF()));
-			System.out.flush();
+			System.out.println("1. First, we show the result (AML Concept Model) of the forward translation of the class " + className + "\n");
+			System.out.println("original owl class:\n\n\t " + renderer.render(tester.getETFAClasses().get(i)) + "\n");
+			System.out.println("negation normal form (NNF):\n\n\t " + renderer.render(tester.getETFAClasses().get(i).getNNF()));
 
 			// ======================= STEP 1: OWL -> AML Concept Trees======================= //			
 			List<AMLConceptTree> trees = tester.toAMLConceptTrees(tester.getETFAClasses().get(i));
@@ -220,16 +215,14 @@ public class ETFAForwardTranslationDemo {
 			for(AMLConceptTree tree : trees) {
 
 				// ======================= STEP 2: AML Concept Tree -> AMLQuery model ======================= //
-				System.err.println("\n1.3. The generated AML concept model [" +  j +  "]\n");
+				System.out.println("\n1.3. The generated AML concept model [" +  j +  "]\n");
 				GenericTreeNode<AMLConceptModel> query = AMLConceptTree.toAMLConceptModelTreeNode(tree.getRoot());
 				AMLConceptModelTree queryTree = new AMLConceptModelTree(query);
-				System.out.println(query.toString());
-				System.out.flush();
+				System.out.println(query.toStringWithIndent(3));
 
-				System.err.println("\n1.4. the cleaned (fused) AML concept model [" +  j +  "]\n");
+				System.out.println("\n1.4. the cleaned (fused) AML concept model [" +  j +  "]\n");
 				AMLConceptModelTree.fuse(queryTree.getRoot());
-				System.out.println(query.toString());
-				System.out.flush();
+				System.out.println(query.toStringWithIndent(3));
 
 				// ======================= STEP 2: AML Query Model -> OWL ======================= //
 				
@@ -240,10 +233,9 @@ public class ETFAForwardTranslationDemo {
 				union.add(ce3);								
 				
 				if(trees.size() == 1) {
-					System.err.println("\n2. Then, we show the reproduced OWL class expression using backward translation\n");
-					System.out.println(" - generated owl class:\n\t " + renderer.render(ce2) + "\n");
-					System.out.println(" - simplified owl class:\n\t " + renderer.render(ce3) + "\n");
-					System.out.flush();
+					System.out.println("\n2. Then, we show the reproduced OWL class expression using backward translation\n");
+					System.out.println(" - generated owl class:\n\n\t " + renderer.render(ce2) + "\n");
+					System.out.println(" - simplified owl class:\n\n\t " + renderer.render(ce3) + "\n");
 				}
 
 				// for testing the equivalence, we need to build an ontology and use the reasoner.getEquivalentClasses
@@ -252,25 +244,23 @@ public class ETFAForwardTranslationDemo {
 			}
 			
 			if(union.size() > 1) {
-				System.err.println("\n2. Then, we show the reproduced OWL class expression using backward translation\n");
-				System.err.println("\n Since we have several AML concept trees generated, we compute an OWL class for each of them:\n");
+				System.out.println("\n2. Then, we show the reproduced OWL class expression using backward translation\n");
+				System.out.println("   Since we have several AML concept trees generated, we compute an OWL class for each of them:\n");
 				
 				int k = 1;
 				for(OWLClassExpression ce : union) {
-					System.out.println(" - OWL class of the AML concept tree [" + k + "]\n\t: " + renderer.render(ce));
+					System.out.println("    - OWL class of the AML concept tree [" + k + "]:\n\n\t " + renderer.render(ce) + "\n");
 					k++;
 				}		
 			
 				reproduced = dataFactory.getOWLObjectUnionOf(union);
-				System.err.println("\n Then we combine each of the OWL classes as a union");
-				System.out.println("\n\t " + renderer.render(reproduced));
+				System.out.println("   Then we combine each of the OWL classes as a union: \n\n\t" + renderer.render(reproduced) + "\n");
 			}
 			
 						
-			System.err.println("\n It shall be clear that the following OWL class expressiones are equivalent:\n");
-			System.out.println(" - the original OWL class C in NNF:\n\n\t " + renderer.render(tester.getETFAClasses().get(i).getNNF()) + "\n");
-			System.out.println(" - the reproduced OWL class as backward_translation(forward_translation(C):\n\n\t " + renderer.render(reproduced) + "\n");			
-			System.out.flush();
+			System.out.println("   It shall be clear that the following OWL class expressiones are equivalent:\n");
+			System.out.println("    - the original OWL class (C) in NNF:\n\n\t " + renderer.render(tester.getETFAClasses().get(i).getNNF()) + "\n");
+			System.out.println("    - the reproduced OWL class as backward_translation(forward_translation(C)):\n\n\t " + renderer.render(reproduced) + "\n");			
 		}
 	}
 }
