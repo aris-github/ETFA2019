@@ -1,0 +1,64 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>AutomationML</groupId>
+  <artifactId>aml_owl</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>AML2OWL Transformer</name>
+  
+  <properties>
+  	<maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>1.8</maven.compiler.source>
+  </properties>
+  
+  <dependencies>
+  		 
+		<dependency>
+		    <groupId>net.sourceforge.owlapi</groupId>
+		    <artifactId>owlapi-distribution</artifactId>
+		    <version>5.1.9</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>net.sourceforge.owlapi</groupId>
+		    <artifactId>owlapi-apibinding</artifactId>
+		    <version>5.1.9</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>net.sourceforge.owlapi</groupId>
+		    <artifactId>owlapi-api</artifactId>
+		    <version>5.1.9</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>net.sourceforge.owlapi</groupId>
+		    <artifactId>owlapi-impl</artifactId>
+		    <version>5.1.9</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>net.sourceforge.owlapi</groupId>
+		    <artifactId>owlapi-parsers</artifactId>
+		    <version>5.1.9</version>
+		</dependency>				
+		
+		<dependency>
+		    <groupId>net.sourceforge.owlapi</groupId>
+		    <artifactId>owlapi-osgidistribution</artifactId>
+		    <version>5.1.9</version>
+		</dependency>								
+		
+		<dependency>
+	      	<groupId>AutomationML</groupId>
+	      	<artifactId>aml_models</artifactId>
+	     	<version>0.0.1-SNAPSHOT</version>
+	    	</dependency>
+	    	
+	    	<dependency>
+	      	<groupId>AutomationML</groupId>
+	      	<artifactId>aml_io</artifactId>
+	     	<version>0.0.1-SNAPSHOT</version>
+	    	</dependency>
+	    
+  </dependencies>
+</project>
