@@ -24,7 +24,7 @@ There are two test programs written for the ETFA paper
 * `ETFAForwardTranslationDemo`
 * `ETFABackwardTranslationDemo`
 
-To test the results as published in the paper, find the test programs in Eclipse under *aml_owl/src/test/java/aml_owl/*, and run them as Java Applications
+To test the results as published in the paper, find the test programs in Eclipse under `aml_owl/src/test/java/aml_owl/`, and run them as Java Applications
 
 The results are directly printed out in the console.
 
