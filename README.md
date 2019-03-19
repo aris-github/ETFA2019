@@ -15,7 +15,7 @@ Then import the projects and use Maven to compile each of them in following sequ
 
 1. aml_models
 2. aml_io
-3. aml_owl_
+3. aml_owl
 
 ## Run the tests
 
