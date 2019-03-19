@@ -16,6 +16,7 @@ import org.eclipse.emf.ecore.xml.type.XMLTypeFactory;
 
 import CAEX215.AttributeType;
 import CAEX215.CAEXFileType;
+import CAEX215.CAEXObject;
 import CAEX215.ExternalInterfaceType;
 import CAEX215.InstanceHierarchyType;
 import CAEX215.InternalElementType;
@@ -181,6 +182,38 @@ public class AMLHelperFunctions {
 		return null;
 	}
 	
+	public static boolean sucHasEI (SystemUnitClassType suc, ExternalInterfaceType ei) {
+		
+		if(suc.getExternalInterface().contains(ei)) {
+			return true;
+		}
+		
+		for(InternalElementType ie : suc.getInternalElement()) {
+			if(sucHasEI(ie, ei))
+				return true;
+		}
+		
+		return false;
+	}
+	
+	public static CAEXObject getRootOfEI (ExternalInterfaceType ei, CAEXFileType aml) {
+		
+		for(SystemUnitClassLibType sucl : aml.getSystemUnitClassLib()) {
+			for(SystemUnitFamilyType suf : sucl.getSystemUnitClass()) {
+				if(sucHasEI(suf, ei))
+					return suf;
+			}
+		}
+		
+		for(InstanceHierarchyType ih : aml.getInstanceHierarchy()) {
+			for(InternalElementType ie : ih.getInternalElement()) {
+				if(sucHasEI(ie, ei))
+					return ie;
+			}
+		}
+		
+		return null;
+	}
 	
 	public static SystemUnitClassType getParentOfEI(ExternalInterfaceType ei, CAEXFileType aml) {
 		for(SystemUnitClassLibType sucl : aml.getSystemUnitClassLib()) {
@@ -280,7 +313,7 @@ public class AMLHelperFunctions {
 		for(SystemUnitFamilyType child : suf.getSystemUnitClass())
 			links.addAll(getAllLinksFromSUC(child));		
 		return links;
-	}	
+	}		
 	
 	public static InternalElementType getIEByID(String id, CAEXFileType aml) {
 		for(SystemUnitClassLibType sucl : aml.getSystemUnitClassLib()) {

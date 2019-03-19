@@ -68,8 +68,10 @@ public class AMLConceptTree extends GenericTree<AMLConcept>{
 	/**
 	 * generate a tree from an owl class expression
 	 * @param ce
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
 	 */
-	public AMLConceptTree(OWLClassExpression ce) {
+	public AMLConceptTree(OWLClassExpression ce) throws InstantiationException, IllegalAccessException {
 		this.root = new GenericTreeNode<AMLConcept>();
 		this.root.data = new AMLConcept();
 //		this.root.data.setExpression(ce);
@@ -110,6 +112,7 @@ public class AMLConceptTree extends GenericTree<AMLConcept>{
 	 * @throws SecurityException 
 	 * @throws NoSuchMethodException 
 	 */
+	@SuppressWarnings("deprecation")
 	public Set<AMLConceptTree> expand() throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		
 		Set<AMLConceptTree> trees = new HashSet<AMLConceptTree>();
@@ -734,10 +737,12 @@ public class AMLConceptTree extends GenericTree<AMLConcept>{
 	 * generate a tree for a concept object which is a (nested) AML attribute
 	 * @param acm
 	 * @return
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
 	 */
-	private static GenericTreeNode<AMLConceptModel> getAMLConceptModelTreeNodeForNestedAttribute (AMLConceptModel acm) {
+	private static GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> getAMLConceptModelTreeNodeForNestedAttribute (GenericAMLConceptModel<AMLConceptConfig> acm) {
 		
-		GenericTreeNode<AMLConceptModel> root = null;
+		GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> root = null;
 		
 		AttributeType attr = (AttributeType) acm.getObj();							
 		String name = attr.getName();
@@ -747,12 +752,12 @@ public class AMLConceptTree extends GenericTree<AMLConcept>{
 		
 		// if tokens has only one element, then the attribute is not nested
 		if(tokens.length == 1) {
-			root = new GenericTreeNode<AMLConceptModel>(acm);
+			root = new GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>(acm);
 		}
 		
 		// otherwise, generate a tree node for each of the nested ones
 		else {
-			List<AMLConceptModel> tokenObjs = new ArrayList<AMLConceptModel>();
+			List<GenericAMLConceptModel<AMLConceptConfig>> tokenObjs = new ArrayList<GenericAMLConceptModel<AMLConceptConfig>>();
 			for(int i = 0; i < tokens.length; i++) {
 				AttributeType tokenAttr = CAEX215Factory.eINSTANCE.createAttributeType();
 				tokenAttr.setName(tokens[i]);
@@ -760,19 +765,22 @@ public class AMLConceptTree extends GenericTree<AMLConcept>{
 				// for the last one, we apply the constraints and the config
 				if(i == tokens.length-1) {
 					tokenAttr.getConstraint().addAll(attr.getConstraint());
-					tokenObjs.add(new AMLConceptModel(tokenAttr, acm.getConfig()));
+					tokenObjs.add(new GenericAMLConceptModel<AMLConceptConfig>(tokenAttr, (AMLConceptConfig) acm.getConfig()));
 				}
 				// for previous ones, use standard config
-				else
-					tokenObjs.add(new AMLConceptModel(tokenAttr, new AMLConceptAttributes()));				
+				else {
+					AMLConceptConfig config = new AMLConceptConfig();
+					config.setIdentifiedByName(true);
+					tokenObjs.add(new GenericAMLConceptModel<AMLConceptConfig>(tokenAttr, config));
+				}									
 			}
 			
-			List<GenericTreeNode<AMLConceptModel>> nodes = new ArrayList<GenericTreeNode<AMLConceptModel>>();
-			root = new GenericTreeNode<AMLConceptModel>(tokenObjs.get(0));
+			List<GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>> nodes = new ArrayList<GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>>();
+			root = new GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>(tokenObjs.get(0));
 			nodes.add(root);
 			
 			for(int i = 1; i < tokenObjs.size(); i++) {
-				GenericTreeNode<AMLConceptModel> descendant = new GenericTreeNode<AMLConceptModel>(tokenObjs.get(i));
+				GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> descendant = new GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>(tokenObjs.get(i));
 				nodes.get(i-1).addChild(descendant);
 				nodes.add(descendant);
 			}					
@@ -787,8 +795,10 @@ public class AMLConceptTree extends GenericTree<AMLConcept>{
 	 * this shall be done after inverse role restrictions are removed from the AML concept tree
 	 * @param node
 	 * @return
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
 	 */
-	public static GenericTreeNode<AMLConceptModel> toAMLConceptModelTreeNode(GenericTreeNode<AMLConcept> node) {		
+	public static GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> toAMLConceptModelTreeNode(GenericTreeNode<AMLConcept> node) throws InstantiationException, IllegalAccessException {		
 		
 		// get rid of unreasonable root expressions
 		if(node.getParent() == null) {
@@ -805,7 +815,7 @@ public class AMLConceptTree extends GenericTree<AMLConcept>{
 			return null;
 		}
 		
-		GenericTreeNode<AMLConceptModel> aml = null;
+		GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> aml = null;
 		
 		if(OWLExpressionUtils.isExpandable(node.data.getExpression())) {			
 			// if data is intersection, then the OWL2AMLConverter will return null
@@ -813,11 +823,11 @@ public class AMLConceptTree extends GenericTree<AMLConcept>{
 			if(node.data.getExpression() instanceof OWLObjectIntersectionOf) {
 								
 				CAEXObject caex = OWL2AMLConverter.getCAEXObjectSimple(getCAEXType(node));
-				AMLConceptAttributes config = new AMLConceptAttributes();
+				AMLConceptConfig config = new AMLConceptConfig();
 				
 				config.setPrimary(node.data.isPrimary());
-				AMLConceptModel acm = new AMLConceptModel(caex, config);
-				aml = new GenericTreeNode<AMLConceptModel>(acm);
+				GenericAMLConceptModel<AMLConceptConfig> acm = new GenericAMLConceptModel<AMLConceptConfig>(caex, config);
+				aml = new GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>(acm);
 				
 				// otherwise				
 				if(caex instanceof InternalElementType) {
@@ -828,9 +838,9 @@ public class AMLConceptTree extends GenericTree<AMLConcept>{
 						// do this before atomic test, since Thing is atomic
 						if(child.data.getExpression().isOWLThing()) {
 							CAEXObject caexChild = OWL2AMLConverter.getCAEXObjectSimple(getCAEXType(child));
-							AMLConceptAttributes configChild = new AMLConceptAttributes();
+							AMLConceptConfig configChild = new AMLConceptConfig();
 							configChild.setPrimary(child.data.isPrimary());
-							GenericTreeNode<AMLConceptModel> childNode = new GenericTreeNode<AMLConceptModel>(new AMLConceptModel(caexChild, configChild));
+							GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> childNode = new GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>(new GenericAMLConceptModel<AMLConceptConfig>(caexChild, configChild));
 							aml.addChild(childNode);
 						}
 						else if(child.data.getExpression().isOWLNothing()) {
@@ -843,7 +853,7 @@ public class AMLConceptTree extends GenericTree<AMLConcept>{
 							((InternalElementType) caex).setRoleRequirements(rr);;
 							// if the reference was a negated atomic: set negated to true
 							if(child.data.getExpression() instanceof OWLObjectComplementOf) {
-								aml.data.getConfig().setNegated(true);
+								((AMLConceptConfig) aml.data.getConfig()).setNegated(true);
 							}
 						}
 						else
@@ -860,9 +870,9 @@ public class AMLConceptTree extends GenericTree<AMLConcept>{
 						// do this before atomic test, since Thing is atomic
 						if(child.data.getExpression().isOWLThing()) {
 							CAEXObject caexChild = OWL2AMLConverter.getCAEXObjectSimple(getCAEXType(child));
-							AMLConceptAttributes configChild = new AMLConceptAttributes();
+							AMLConceptConfig configChild = new AMLConceptConfig();
 							configChild.setPrimary(child.data.isPrimary());
-							GenericTreeNode<AMLConceptModel> childNode = new GenericTreeNode<AMLConceptModel>(new AMLConceptModel(caexChild, configChild));
+							GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> childNode = new GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>(new GenericAMLConceptModel<AMLConceptConfig>(caexChild, configChild));
 							aml.addChild(childNode);
 						}
 						// for (nested) atomics, we make a Class reference for EI nodes
@@ -871,7 +881,7 @@ public class AMLConceptTree extends GenericTree<AMLConcept>{
 							
 							// if the reference was a negated atomic: set negated to true
 							if(child.data.getExpression() instanceof OWLObjectComplementOf) {
-								aml.data.getConfig().setNegated(true);
+								((AMLConceptConfig) aml.data.getConfig()).setNegated(true);
 							}
 						}
 						else
@@ -899,8 +909,8 @@ public class AMLConceptTree extends GenericTree<AMLConcept>{
 			
 			else if (node.data.getExpression() instanceof OWLRestriction){			
 				
-				AMLConceptModel acm = node.data.getExpression().accept(AML_CONVERTER);				
-				acm.getConfig().setPrimary(node.data.isPrimary());
+				GenericAMLConceptModel<AMLConceptConfig> acm = node.data.getExpression().accept(AML_CONVERTER);				
+				((AMLConceptConfig) acm.getConfig()).setPrimary(node.data.isPrimary());
 				
 				// if the acm object is a nested AML attribute, we need to unfold it since it is flattened to something like "dimension_weight, dimension_height, dimension_width"
 				// for such attributes, we need to generate a hierarchy of AMLQueryTreeNodes
@@ -908,7 +918,7 @@ public class AMLConceptTree extends GenericTree<AMLConcept>{
 					aml = getAMLConceptModelTreeNodeForNestedAttribute(acm);
 				}
 				else {
-					aml = new GenericTreeNode<AMLConceptModel>(acm);
+					aml = new GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>(acm);
 				}
 				
 				
@@ -922,7 +932,7 @@ public class AMLConceptTree extends GenericTree<AMLConcept>{
 						
 						// if the reference was a negated atomic: set negated to true
 						if(child.data.getExpression() instanceof OWLObjectComplementOf) {
-							aml.data.getConfig().setNegated(true);
+							((AMLConceptConfig) aml.data.getConfig()).setNegated(true);
 						}
 						
 						if(acm.getObj() instanceof InternalElementType) {
@@ -960,7 +970,7 @@ public class AMLConceptTree extends GenericTree<AMLConcept>{
 								// if we only have RR (no SRC), then this could only happen once
 								// we can not handle SRC, e.g. hasIE(not A and not B and C): this is not possible to do using a single attribute negated 
 								if(grandChild.data.getExpression() instanceof OWLObjectComplementOf) {
-									aml.data.getConfig().setNegated(true);
+									((AMLConceptConfig) aml.data.getConfig()).setNegated(true);
 								}
 								
 								if(acm.getObj() instanceof InternalElementType) {
@@ -991,16 +1001,16 @@ public class AMLConceptTree extends GenericTree<AMLConcept>{
 								System.err.println("AMLConceptTree.toAMLQueryNode: intersection inside intersection while handling filler of intersection");
 							}
 							else {
-								GenericTreeNode<AMLConceptModel> cnode = toAMLConceptModelTreeNode(grandChild);
-//								GenericTreeNode<AMLConceptModel> cnode = toAMLQueryNode(new AMLConceptTree(child));
+								GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> cnode = toAMLConceptModelTreeNode(grandChild);
+//								GenericTreeNode<AbstractAMLConceptModel<OWLAMLConceptConfig>> cnode = toAMLQueryNode(new AMLConceptTree(child));
 								if(cnode != null)
 									aml.addChild(cnode);
 							}
 						}
 					}
 					else {
-						GenericTreeNode<AMLConceptModel> cnode = toAMLConceptModelTreeNode(child);
-//						GenericTreeNode<AMLConceptModel> cnode = toAMLQueryNode(new AMLConceptTree(child));
+						GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> cnode = toAMLConceptModelTreeNode(child);
+//						GenericTreeNode<AbstractAMLConceptModel<OWLAMLConceptConfig>> cnode = toAMLQueryNode(new AMLConceptTree(child));
 						if(cnode != null)
 							aml.addChild(cnode);
 					}
@@ -1017,13 +1027,13 @@ public class AMLConceptTree extends GenericTree<AMLConcept>{
 			if(node.data.getExpression().isClassExpressionLiteral() || node.data.getExpression() instanceof OWLObjectComplementOf) {
 				if(node.getParent() == null) {
 					CAEXObject caex = OWL2AMLConverter.getCAEXObjectSimple(getCAEXType(node));
-					AMLConceptAttributes config = new AMLConceptAttributes();
+					AMLConceptConfig config = new AMLConceptConfig();
 					config.setPrimary(node.data.isPrimary());
 					
 					if(node.data.getExpression() instanceof OWLObjectComplementOf)
 						config.setNegated(true);
 					
-					AMLConceptModel acm = new AMLConceptModel(caex, config);															
+					GenericAMLConceptModel<AMLConceptConfig> acm = new GenericAMLConceptModel<AMLConceptConfig>(caex, config);															
 					
 					if(caex instanceof InternalElementType) {
 						RoleRequirementsType rr = caexFactory.createRoleRequirementsType();
@@ -1049,7 +1059,7 @@ public class AMLConceptTree extends GenericTree<AMLConcept>{
 						
 					}
 					
-					aml = new GenericTreeNode<AMLConceptModel>(acm);
+					aml = new GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>(acm);
 				}
 				else {
 					// shall not happen: for all atomic cases being not the root, we have done it somewhere before while looking at atomic children
@@ -1062,15 +1072,15 @@ public class AMLConceptTree extends GenericTree<AMLConcept>{
 			else if (node.data.getExpression() instanceof OWLRestriction){
 				
 				// get the AML acm object from the role restriction		
-				AMLConceptModel roleQuery = node.data.getExpression().accept(AML_CONVERTER);
+				GenericAMLConceptModel<AMLConceptConfig> roleQuery = node.data.getExpression().accept(AML_CONVERTER);
 				
 				if(roleQuery != null) {					
 					// if the node is root: we need an additional acm object as parent
 					if(node.getParent() == null) {
 						CAEXObject caex = OWL2AMLConverter.getCAEXObjectSimple(getCAEXType(node));
-						AMLConceptAttributes config = new AMLConceptAttributes();
+						AMLConceptConfig config = new AMLConceptConfig();
 						config.setPrimary(node.data.isPrimary());
-						aml = new GenericTreeNode<AMLConceptModel>(new AMLConceptModel(caex, config));
+						aml = new GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>(new GenericAMLConceptModel<AMLConceptConfig>(caex, config));
 						
 						// if the acm object is a nested AML attribute, we need to unfold it since it is flattened to something like "dimension_weight, dimension_height, dimension_width"
 						// for such attributes, we need to generate a hierarchy of AMLQueryTreeNodes
@@ -1078,27 +1088,27 @@ public class AMLConceptTree extends GenericTree<AMLConcept>{
 							aml.addChild(getAMLConceptModelTreeNodeForNestedAttribute(roleQuery));
 						}
 						else {
-							aml.addChild(new GenericTreeNode<AMLConceptModel>(roleQuery));
+							aml.addChild(new GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>(roleQuery));
 						}
 						
-//						aml.addChild(new GenericTreeNode<AMLConceptModel>(roleQuery));
+//						aml.addChild(new GenericTreeNode<AbstractAMLConceptModel<OWLAMLConceptConfig>>(roleQuery));
 					}
 					else	{			
-						roleQuery.getConfig().setPrimary(node.data.isPrimary());
+						((AMLConceptConfig) roleQuery.getConfig()).setPrimary(node.data.isPrimary());
 						// if the acm object is a nested AML attribute, we need to unfold it since it is flattened to something like "dimension_weight, dimension_height, dimension_width"
 						// for such attributes, we need to generate a hierarchy of AMLQueryTreeNodes
 						if(roleQuery.getObj() instanceof AttributeType) {					
 							aml	= getAMLConceptModelTreeNodeForNestedAttribute(roleQuery);
 						}
 						else {
-							aml	= new GenericTreeNode<AMLConceptModel>(roleQuery);
+							aml	= new GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>(roleQuery);
 						}
-//						aml	= new GenericTreeNode<AMLConceptModel>(roleQuery);
+//						aml	= new GenericTreeNode<AbstractAMLConceptModel<OWLAMLConceptConfig>>(roleQuery);
 					}
 				}
 			}// end:restriction
 		}
 		
 		return aml;
-	}	
+	}
 }

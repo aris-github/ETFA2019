@@ -7,6 +7,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
 
 public abstract class AMLClassHandler extends AMLEntityHandler{
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public OWLEntity cvt2Owl(CAEX215.CAEXObject obj, OWLOntology ont) {
 		// TODO Auto-generated method stub						

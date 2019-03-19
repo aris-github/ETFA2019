@@ -52,15 +52,15 @@ import CAEX215.NominalScaledTypeType;
 import CAEX215.OrdinalScaledTypeType;
 import CAEX215.RoleRequirementsType;
 import CAEX215.util.AMLHelperFunctions;
-import concept.model.AMLConceptAttributes;
-import concept.model.AMLConceptModel;
+import concept.model.AMLConceptConfig;
+import concept.model.GenericAMLConceptModel;
 import constants.AMLClassIRIs;
 import constants.AMLObjectPropertyIRIs;
 import utils.OWLExpressionUtils;
 
 /**
  * @author aris
- * converts an OWLClassExpression to an AMLConceptModel
+ * converts an OWLClassExpression to an AbstractAMLConceptModel<OWLAMLConceptConfig>
  * - atomic: ignore
  * - restriction: 
  * 		- if filler unexpandable: caex object with content (Class reference), config
@@ -75,7 +75,7 @@ import utils.OWLExpressionUtils;
  * - only root node is returned
  * - transitive role 
  */
-public class OWL2AMLConverter implements OWLClassExpressionVisitorEx<AMLConceptModel>{
+public class OWL2AMLConverter implements OWLClassExpressionVisitorEx<GenericAMLConceptModel<AMLConceptConfig>>{
 	
 	private static CAEX215Factory caexFactory = CAEX215Factory.eINSTANCE;
 	
@@ -168,6 +168,7 @@ public class OWL2AMLConverter implements OWLClassExpressionVisitorEx<AMLConceptM
 	}
 	
 	// we do not have this as an Visitor, since it needs to know the property
+	@SuppressWarnings("deprecation")
 	private AttributeType getCAEXObject (OWLDataPropertyExpression property, OWLDataRange filler) {
 		AttributeType attr = getAMLAttribute(property);
 		
@@ -304,27 +305,27 @@ public class OWL2AMLConverter implements OWLClassExpressionVisitorEx<AMLConceptM
 	}
 
 	@Override
-	public AMLConceptModel visit(OWLClass ce) {
+	public GenericAMLConceptModel<AMLConceptConfig> visit(OWLClass ce) {
 		// atomic concepts do not need handling directly
 		// they are converted to class references in their parents in the owl tree
 		return null;
 	}
 
 	@Override
-	public AMLConceptModel visit(OWLObjectIntersectionOf ce) {
+	public GenericAMLConceptModel<AMLConceptConfig> visit(OWLObjectIntersectionOf ce) {
 		// conjunctions are only place holders in the owl tree
 		// they do not need any handling
 		return null;
 	}
 
 	@Override
-	public AMLConceptModel visit(OWLObjectUnionOf ce) {
+	public GenericAMLConceptModel<AMLConceptConfig> visit(OWLObjectUnionOf ce) {
 		// disjunctions can not happen in the owl tree: OWLTree generation will separate disjunctions into several trees
 		return null;
 	}
 
 	@Override
-	public AMLConceptModel visit(OWLObjectComplementOf ce) {
+	public GenericAMLConceptModel<AMLConceptConfig> visit(OWLObjectComplementOf ce) {
 		// negated concepts are not handled directly
 		// they are converted to class references with corresponding configs in their parents in the owl tree
 		// general negations can not happen in the owl tree: DL-Learner does not produce them
@@ -332,12 +333,12 @@ public class OWL2AMLConverter implements OWLClassExpressionVisitorEx<AMLConceptM
 	}
 
 	@Override
-	public AMLConceptModel visit(OWLObjectSomeValuesFrom ce) {
+	public GenericAMLConceptModel<AMLConceptConfig> visit(OWLObjectSomeValuesFrom ce) {
 		OWLObjectPropertyExpression property = ce.getProperty();
 		OWLClassExpression filler = ce.getFiller();
 		
 		CAEXObject caex = getCAEXObject(property, filler);
-		AMLConceptAttributes config = new AMLConceptAttributes();
+		AMLConceptConfig config = new AMLConceptConfig();
 		
 		// if caex object exists, i.e. the filler is atomic
 		if(caex != null) {			
@@ -350,7 +351,7 @@ public class OWL2AMLConverter implements OWLClassExpressionVisitorEx<AMLConceptM
 			}
 			// if the filler is an atomic, keep config to be default
 			
-			return new AMLConceptModel(caex, config);		
+			return new GenericAMLConceptModel<AMLConceptConfig>(caex, config);		
 		}
 		
 		// if caex object does not exist, then nothing returned;
@@ -358,12 +359,12 @@ public class OWL2AMLConverter implements OWLClassExpressionVisitorEx<AMLConceptM
 	}
 
 	@Override
-	public AMLConceptModel visit(OWLObjectAllValuesFrom ce) {
+	public GenericAMLConceptModel<AMLConceptConfig> visit(OWLObjectAllValuesFrom ce) {
 		OWLObjectPropertyExpression property = ce.getProperty();
 		OWLClassExpression filler = ce.getFiller();
 		CAEXObject caex = getCAEXObject(property, filler);
 
-		AMLConceptAttributes config = new AMLConceptAttributes();
+		AMLConceptConfig config = new AMLConceptConfig();
 		// since it is an universal quantification, the concept model is a counting function with
 		// config.min = 0
 		// config.max = 0
@@ -389,7 +390,7 @@ public class OWL2AMLConverter implements OWLClassExpressionVisitorEx<AMLConceptM
 				config.setNegated(true);
 			}
 			
-			return new AMLConceptModel(caex, config);
+			return new GenericAMLConceptModel<AMLConceptConfig>(caex, config);
 		}
 		
 		// if caex object does not exist, then nothing returned;
@@ -397,7 +398,7 @@ public class OWL2AMLConverter implements OWLClassExpressionVisitorEx<AMLConceptM
 	}
 
 	@Override
-	public AMLConceptModel visit(OWLObjectHasValue ce) {
+	public GenericAMLConceptModel<AMLConceptConfig> visit(OWLObjectHasValue ce) {
 		
 		OWLObjectPropertyExpression property = ce.getProperty();
 		OWLIndividual filler = ce.getFiller();
@@ -408,12 +409,12 @@ public class OWL2AMLConverter implements OWLClassExpressionVisitorEx<AMLConceptM
 			caex.setID(OWLExpressionUtils.getAMLId(filler));
 			
 			// build a config to the object
-			AMLConceptAttributes config = new AMLConceptAttributes();
+			AMLConceptConfig config = new AMLConceptConfig();
 			// since object has value: we need exactly this object by ID
 			config.setIdentifiedById(true);
 			
 			// add a child node to the current node
-			return new AMLConceptModel(caex, config);
+			return new GenericAMLConceptModel<AMLConceptConfig>(caex, config);
 		}
 		
 		// if caex object does not exist, then nothing returned;
@@ -421,12 +422,12 @@ public class OWL2AMLConverter implements OWLClassExpressionVisitorEx<AMLConceptM
 	}
 
 	@Override
-	public AMLConceptModel visit(OWLObjectMinCardinality ce) {
+	public GenericAMLConceptModel<AMLConceptConfig> visit(OWLObjectMinCardinality ce) {
 		
 		OWLObjectPropertyExpression property = ce.getProperty();
 		OWLClassExpression filler = ce.getFiller();
 		CAEXObject caex = getCAEXObject(property, filler);
-		AMLConceptAttributes config = new AMLConceptAttributes();
+		AMLConceptConfig config = new AMLConceptConfig();
 		
 		// if caex object exists, i.e. the filler is atomic
 		if(caex != null) {
@@ -443,7 +444,7 @@ public class OWL2AMLConverter implements OWLClassExpressionVisitorEx<AMLConceptM
 			}
 			// if the filler is an atomic, keep config to be default
 			
-			return new AMLConceptModel(caex, config);		
+			return new GenericAMLConceptModel<AMLConceptConfig>(caex, config);		
 		}
 		
 		// if caex object does not exist, then nothing returned;
@@ -451,12 +452,12 @@ public class OWL2AMLConverter implements OWLClassExpressionVisitorEx<AMLConceptM
 	}
 
 	@Override
-	public AMLConceptModel visit(OWLObjectExactCardinality ce) {
+	public GenericAMLConceptModel<AMLConceptConfig> visit(OWLObjectExactCardinality ce) {
 		
 		OWLObjectPropertyExpression property = ce.getProperty();
 		OWLClassExpression filler = ce.getFiller();
 		CAEXObject caex = getCAEXObject(property, filler);
-		AMLConceptAttributes config = new AMLConceptAttributes();
+		AMLConceptConfig config = new AMLConceptConfig();
 		
 		// if caex object exists, i.e. the filler is atomic
 		if(caex != null) {
@@ -473,7 +474,7 @@ public class OWL2AMLConverter implements OWLClassExpressionVisitorEx<AMLConceptM
 			}
 			// if the filler is an atomic, keep config to be default
 			
-			return new AMLConceptModel(caex, config);		
+			return new GenericAMLConceptModel<AMLConceptConfig>(caex, config);		
 		}
 		
 		// if caex object does not exist, then nothing returned;
@@ -481,11 +482,11 @@ public class OWL2AMLConverter implements OWLClassExpressionVisitorEx<AMLConceptM
 	}
 
 	@Override
-	public AMLConceptModel visit(OWLObjectMaxCardinality ce) {
+	public GenericAMLConceptModel<AMLConceptConfig> visit(OWLObjectMaxCardinality ce) {
 		OWLObjectPropertyExpression property = ce.getProperty();
 		OWLClassExpression filler = ce.getFiller();
 		CAEXObject caex = getCAEXObject(property, filler);
-		AMLConceptAttributes config = new AMLConceptAttributes();
+		AMLConceptConfig config = new AMLConceptConfig();
 		
 		// if caex object exists, i.e. the filler is atomic
 		if(caex != null) {
@@ -501,7 +502,7 @@ public class OWL2AMLConverter implements OWLClassExpressionVisitorEx<AMLConceptM
 			}
 			// if the filler is an atomic, keep config to be default
 			
-			return new AMLConceptModel(caex, config);		
+			return new GenericAMLConceptModel<AMLConceptConfig>(caex, config);		
 		}
 		
 		// if caex object does not exist, then nothing returned;
@@ -509,14 +510,14 @@ public class OWL2AMLConverter implements OWLClassExpressionVisitorEx<AMLConceptM
 	}
 
 	@Override
-	public AMLConceptModel visit(OWLObjectHasSelf ce) {
+	public GenericAMLConceptModel<AMLConceptConfig> visit(OWLObjectHasSelf ce) {
 		// TODO Auto-generated method stub
 		// do not happen: DL-Learner does not produce this
 		return null;
 	}
 
 	@Override
-	public AMLConceptModel visit(OWLObjectOneOf ce) {
+	public GenericAMLConceptModel<AMLConceptConfig> visit(OWLObjectOneOf ce) {
 		// TODO Auto-generated method stub
 		// do not happen: DL-Learner does not produce this
 		// if it does happen: we need several trees for this, since it is basically a disjunction
@@ -524,38 +525,38 @@ public class OWL2AMLConverter implements OWLClassExpressionVisitorEx<AMLConceptM
 	}
 
 	@Override
-	public AMLConceptModel visit(OWLDataSomeValuesFrom ce) {
+	public GenericAMLConceptModel<AMLConceptConfig> visit(OWLDataSomeValuesFrom ce) {
 		OWLDataPropertyExpression property = ce.getProperty();
 		OWLDataRange filler = ce.getFiller();
 		CAEXObject caex = getCAEXObject(property, filler);
 		
-		AMLConceptAttributes config = new AMLConceptAttributes();
+		AMLConceptConfig config = new AMLConceptConfig();
 		config.setIdentifiedByName(true);
 		if(filler instanceof OWLDataComplementOf)
 			config.setNegated(true);
 		
-		return new AMLConceptModel(caex, config);
+		return new GenericAMLConceptModel<AMLConceptConfig>(caex, config);
 	}
 
 	@Override
-	public AMLConceptModel visit(OWLDataAllValuesFrom ce) {
+	public GenericAMLConceptModel<AMLConceptConfig> visit(OWLDataAllValuesFrom ce) {
 
 		// do not happen: DL-Learner does not produce this, i.e. r only Double (>50)
 		OWLDataPropertyExpression property = ce.getProperty();
 		OWLDataRange filler = ce.getFiller();
 		CAEXObject caex = getCAEXObject(property, filler);
 		
-		AMLConceptAttributes config = new AMLConceptAttributes();
+		AMLConceptConfig config = new AMLConceptConfig();
 		config.setIdentifiedByName(true);
 		if(filler instanceof OWLDataComplementOf)
 			config.setNegated(true);
 		
-		return new AMLConceptModel(caex, config);
+		return new GenericAMLConceptModel<AMLConceptConfig>(caex, config);
 //		return null;
 	}
 
 	@Override
-	public AMLConceptModel visit(OWLDataHasValue ce) {
+	public GenericAMLConceptModel<AMLConceptConfig> visit(OWLDataHasValue ce) {
 
 		OWLDataPropertyExpression property = ce.getProperty();
 		OWLLiteral filler = ce.getFiller();
@@ -563,35 +564,35 @@ public class OWL2AMLConverter implements OWLClassExpressionVisitorEx<AMLConceptM
 		// if the data property was for a nested attribute, we get the flattened one here
 		CAEXObject caex = getCAEXObject(property, filler);
 			
-		AMLConceptAttributes config = new AMLConceptAttributes();
+		AMLConceptConfig config = new AMLConceptConfig();
 		config.setIdentifiedByName(true);
 		
-		return new AMLConceptModel(caex, config);		
+		return new GenericAMLConceptModel<AMLConceptConfig>(caex, config);		
 	}
 
 	@Override
-	public AMLConceptModel visit(OWLDataMinCardinality ce) {
+	public GenericAMLConceptModel<AMLConceptConfig> visit(OWLDataMinCardinality ce) {
 		OWLDataPropertyExpression property = ce.getProperty();
 		OWLDataRange filler = ce.getFiller();
 		CAEXObject caex = getCAEXObject(property, filler);
 		
-		AMLConceptAttributes config = new AMLConceptAttributes();
+		AMLConceptConfig config = new AMLConceptConfig();
 		config.setIdentifiedByName(true);
 		config.setMinCardinality(ce.getCardinality());
 		
 		if(filler instanceof OWLDataComplementOf)
 			config.setNegated(true);
 		
-		return new AMLConceptModel(caex, config);		
+		return new GenericAMLConceptModel<AMLConceptConfig>(caex, config);		
 	}
 
 	@Override
-	public AMLConceptModel visit(OWLDataExactCardinality ce) {
+	public GenericAMLConceptModel<AMLConceptConfig> visit(OWLDataExactCardinality ce) {
 		OWLDataPropertyExpression property = ce.getProperty();
 		OWLDataRange filler = ce.getFiller();
 		CAEXObject caex = getCAEXObject(property, filler);
 		
-		AMLConceptAttributes config = new AMLConceptAttributes();
+		AMLConceptConfig config = new AMLConceptConfig();
 		config.setIdentifiedByName(true);
 		config.setMinCardinality(ce.getCardinality());
 		config.setMaxCardinality(ce.getCardinality());
@@ -599,23 +600,23 @@ public class OWL2AMLConverter implements OWLClassExpressionVisitorEx<AMLConceptM
 		if(filler instanceof OWLDataComplementOf)
 			config.setNegated(true);
 		
-		return new AMLConceptModel(caex, config);
+		return new GenericAMLConceptModel<AMLConceptConfig>(caex, config);
 	}
 
 	@Override
-	public AMLConceptModel visit(OWLDataMaxCardinality ce) {
+	public GenericAMLConceptModel<AMLConceptConfig> visit(OWLDataMaxCardinality ce) {
 		OWLDataPropertyExpression property = ce.getProperty();
 		OWLDataRange filler = ce.getFiller();
 		CAEXObject caex = getCAEXObject(property, filler);
 		
-		AMLConceptAttributes config = new AMLConceptAttributes();
+		AMLConceptConfig config = new AMLConceptConfig();
 		config.setIdentifiedByName(true);
 		config.setMaxCardinality(ce.getCardinality());
 		
 		if(filler instanceof OWLDataComplementOf)
 			config.setNegated(true);
 		
-		return new AMLConceptModel(caex, config);
+		return new GenericAMLConceptModel<AMLConceptConfig>(caex, config);
 	}
 
 }

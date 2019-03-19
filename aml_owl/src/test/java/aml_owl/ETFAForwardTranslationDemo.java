@@ -19,13 +19,14 @@ import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.vocab.OWLFacet;
 
-import concept.model.AMLConceptModel;
+import concept.model.GenericAMLConceptModel;
+import concept.model.AMLConceptConfig;
 import concept.tree.GenericTreeNode;
+import concept.util.GenericAMLConceptModelUtils;
 import constants.AMLClassIRIs;
 import constants.AMLObjectPropertyIRIs;
 import translation.complex.AML2OWLConverter;
 import translation.complex.AMLConceptTree;
-import tree.AMLConceptModelTree;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 public class ETFAForwardTranslationDemo {
@@ -123,7 +124,7 @@ public class ETFAForwardTranslationDemo {
 	static OWLObjectProperty HAS_IE = dataFactory.getOWLObjectProperty(AMLObjectPropertyIRIs.HAS_INTERNAL_ELEMENT);
 	static OWLObjectProperty HAS_EI = dataFactory.getOWLObjectProperty(AMLObjectPropertyIRIs.HAS_EXTERNAL_INTERFACE);
 	static OWLObjectProperty IS_IE = dataFactory.getOWLObjectProperty(AMLObjectPropertyIRIs.IS_INTERNAL_ELEMENT_OF);
-	static OWLObjectProperty IS_EI = dataFactory.getOWLObjectProperty(AMLObjectPropertyIRIs.HAS_EXTERNAL_INTERFACE);
+	static OWLObjectProperty IS_EI = dataFactory.getOWLObjectProperty(AMLObjectPropertyIRIs.IS_EXTERNAL_INTERFACE_OF);
 	static OWLClassExpression IOCONTROLLER = dataFactory.getOWLClass(IRI.create("IOController"));
 	static OWLClassExpression IOINTERFACE = dataFactory.getOWLClass(IRI.create("IOInterface"));
 	static OWLClassExpression NOT_IOCONTROLLER = dataFactory.getOWLObjectComplementOf(IOCONTROLLER);
@@ -157,10 +158,20 @@ public class ETFAForwardTranslationDemo {
 	}
 
 
-	public List<AMLConceptTree> toAMLConceptTrees (OWLClassExpression ce) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public List<AMLConceptTree> toAMLConceptTrees (int ETFAIndex) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		
+		OWLClassExpression ce = this.getETFAClasses().get(ETFAIndex);
 		AMLConceptTree tree = new AMLConceptTree(ce);
-		tree.getRoot().data.setCaexType(AMLClassIRIs.INTERNAL_ELEMENT);
+		
+		// set the caex type of the target class 
+		if(ETFAIndex == 3)
+			tree.getRoot().data.setCaexType(AMLClassIRIs.EXTERNAL_INTERFACE);
+		else
+			tree.getRoot().data.setCaexType(AMLClassIRIs.INTERNAL_ELEMENT);
+		
+		// the root node is the primary object
 		tree.getRoot().data.setPrimary(true);
+		
 		// expand the initial tree to remove disjunctions
 		Set<AMLConceptTree> expandedTrees = tree.expand();
 		int i = 1;
@@ -207,7 +218,7 @@ public class ETFAForwardTranslationDemo {
 			System.out.println("negation normal form (NNF):\n\n\t " + renderer.render(tester.getETFAClasses().get(i).getNNF()));
 
 			// ======================= STEP 1: OWL -> AML Concept Trees======================= //			
-			List<AMLConceptTree> trees = tester.toAMLConceptTrees(tester.getETFAClasses().get(i));
+			List<AMLConceptTree> trees = tester.toAMLConceptTrees(i);
 
 			Set<OWLClassExpression> union = new HashSet<OWLClassExpression>(); 
 			int j = 1;
@@ -216,12 +227,11 @@ public class ETFAForwardTranslationDemo {
 
 				// ======================= STEP 2: AML Concept Tree -> AMLQuery model ======================= //
 				System.out.println("\n1.3. The generated AML concept model [" +  j +  "]\n");
-				GenericTreeNode<AMLConceptModel> query = AMLConceptTree.toAMLConceptModelTreeNode(tree.getRoot());
-				AMLConceptModelTree queryTree = new AMLConceptModelTree(query);
+				GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> query = AMLConceptTree.toAMLConceptModelTreeNode(tree.getRoot());
 				System.out.println(query.toStringWithIndent(3));
 
 				System.out.println("\n1.4. the cleaned (fused) AML concept model [" +  j +  "]\n");
-				AMLConceptModelTree.fuse(queryTree.getRoot());
+				GenericAMLConceptModelUtils.fuse(query);
 				System.out.println(query.toStringWithIndent(3));
 
 				// ======================= STEP 2: AML Query Model -> OWL ======================= //

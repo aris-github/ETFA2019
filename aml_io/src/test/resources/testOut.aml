@@ -8,7 +8,7 @@
             <WriterVendorURL>www.ipr.kit.edu</WriterVendorURL>
             <WriterVersion>0.0.1</WriterVersion>
             <WriterRelease>0.0.1</WriterRelease>
-            <LastWritingDateTime>20190220_165719</LastWritingDateTime>
+            <LastWritingDateTime>20190310_203543</LastWritingDateTime>
             <WriterProjectTitle>AML Framework</WriterProjectTitle>
             <WriterProjectID>unspecified</WriterProjectID>
         </WriterHeader>
@@ -21,7 +21,12 @@
             <InterfaceClass Name="Order" RefBaseClassPath="AutomationMLBaseInterface">
                 <Attribute AttributeDataType="xs:string" Name="Direction">
                     <Description>The attribute "direction" shall be used in order to specify the direction. Permitted values are "In", "Out" or "InOut".</Description>
-                    <Constraint Name="DirectionConstraint"/>
+                    <Constraint Name="DirectionConstraint">
+                        <RequiredValue>In</RequiredValue>
+                        <RequiredValue>Out</RequiredValue>
+                        <RequiredValue>InOut</RequiredValue>
+                        <NominalScaledType/>
+                    </Constraint>
                 </Attribute>
             </InterfaceClass>
             <InterfaceClass Name="PortConnector" RefBaseClassPath="AutomationMLBaseInterface"/>
@@ -209,12 +214,27 @@
                 <Description>Supported ethernet protocols</Description>
                 <Attribute AttributeDataType="xs:string" Name="protocol1">
                     <Description>supported ethernet protocol 1</Description>
-                    <Constraint Name="protocolConstraint"/>
+                    <Constraint Name="protocolConstraint">
+                        <RequiredValue>TCP/IP</RequiredValue>
+                        <RequiredValue>UDP</RequiredValue>
+                        <RequiredValue>ProfiNet</RequiredValue>
+                        <RequiredValue>ProfiBus</RequiredValue>
+                        <RequiredValue>PowerLink</RequiredValue>
+                        <RequiredValue>EtherNet/IP</RequiredValue>
+                        <RequiredValue>EtherCAT</RequiredValue>
+                        <RequiredValue>SercosIII</RequiredValue>
+                        <NominalScaledType/>
+                    </Constraint>
                 </Attribute>
             </Attribute>
             <Attribute AttributeDataType="xs:string" Name="type">
                 <Description>Type of the ethernet communication</Description>
-                <Constraint Name="EthernetConstraint"/>
+                <Constraint Name="EthernetConstraint">
+                    <RequiredValue>10 BaseT</RequiredValue>
+                    <RequiredValue>100 BaseT</RequiredValue>
+                    <RequiredValue>1000 BaseT</RequiredValue>
+                    <NominalScaledType/>
+                </Constraint>
             </Attribute>
             <Attribute AttributeDataType="xs:string" Name="IPAddress">
                 <Description>IP address of the ethernet physical device</Description>
@@ -235,11 +255,22 @@
         </RoleClass>
         <RoleClass Name="USBPhysicalDevice" RefBaseClassPath="CommunicationRoleClassLib/PhysicalDevice">
             <Attribute AttributeDataType="xs:string" Name="transmissionSpeed">
-                <Constraint Name="transmissionSpeedConstraint"/>
+                <Constraint Name="transmissionSpeedConstraint">
+                    <RequiredValue>low-speed</RequiredValue>
+                    <RequiredValue>full-speed</RequiredValue>
+                    <RequiredValue>high-speed</RequiredValue>
+                    <RequiredValue>super-speed</RequiredValue>
+                    <NominalScaledType/>
+                </Constraint>
             </Attribute>
             <Attribute AttributeDataType="xs:string" Name="protocol"/>
             <Attribute AttributeDataType="xs:string" Name="type">
-                <Constraint Name="EthernetConstraint"/>
+                <Constraint Name="EthernetConstraint">
+                    <RequiredValue>1.0</RequiredValue>
+                    <RequiredValue>2.0</RequiredValue>
+                    <RequiredValue>3.0</RequiredValue>
+                    <NominalScaledType/>
+                </Constraint>
             </Attribute>
             <RoleClass Name="USBPhysicalPortList" RefBaseClassPath="CommunicationRoleClassLib/PhysicalDevice/PhysicalPortList"/>
         </RoleClass>
@@ -249,7 +280,12 @@
                 <Description>Supported serial protocols</Description>
                 <Attribute AttributeDataType="xs:string" Name="protocol1">
                     <Description>supported serial protocol 1</Description>
-                    <Constraint Name="protocolConstraint"/>
+                    <Constraint Name="protocolConstraint">
+                        <RequiredValue>RS232</RequiredValue>
+                        <RequiredValue>RS422</RequiredValue>
+                        <RequiredValue>RS485</RequiredValue>
+                        <NominalScaledType/>
+                    </Constraint>
                 </Attribute>
             </Attribute>
             <RoleClass Name="SerialPhysicalPortList" RefBaseClassPath="CommunicationRoleClassLib/PhysicalDevice/PhysicalPortList"/>
@@ -331,7 +367,12 @@
                 </Attribute>
                 <Attribute AttributeDataType="xs:string" Name="steering">
                     <Description>Steering type of this mobile platform</Description>
-                    <Constraint Name="SteeringConstraint"/>
+                    <Constraint Name="SteeringConstraint">
+                        <RequiredValue>skid</RequiredValue>
+                        <RequiredValue>omnidirection</RequiredValue>
+                        <RequiredValue>differential</RequiredValue>
+                        <NominalScaledType/>
+                    </Constraint>
                 </Attribute>
             </RoleClass>
         </RoleClass>
@@ -485,19 +526,51 @@
         <RoleClass Name="Sensor" RefBaseClassPath="AutomationMLCSRoleClassLib/ControlEquipment/Sensor">
             <Attribute AttributeDataType="xs:string" Name="senseDimension">
                 <Description>Dimension that the sensor can sense</Description>
-                <Constraint Name="SenseDimensionConstraint"/>
+                <Constraint Name="SenseDimensionConstraint">
+                    <RequiredValue>1D</RequiredValue>
+                    <RequiredValue>2D</RequiredValue>
+                    <RequiredValue>3D</RequiredValue>
+                    <RequiredValue>4D</RequiredValue>
+                    <RequiredValue>5D</RequiredValue>
+                    <RequiredValue>6D</RequiredValue>
+                    <NominalScaledType/>
+                </Constraint>
             </Attribute>
             <Attribute AttributeDataType="xs:string" Name="measurementPrinciple">
                 <Description>measurement principle of the sensor</Description>
-                <Constraint Name="MeasurementPrincipleConstraint"/>
+                <Constraint Name="MeasurementPrincipleConstraint">
+                    <RequiredValue>active</RequiredValue>
+                    <RequiredValue>passive</RequiredValue>
+                    <NominalScaledType/>
+                </Constraint>
             </Attribute>
             <Attribute AttributeDataType="xs:string" Name="relationToRobot">
                 <Description>relation of to robot of the sensor</Description>
-                <Constraint Name="RelationToRobotConstraint"/>
+                <Constraint Name="RelationToRobotConstraint">
+                    <RequiredValue>intern</RequiredValue>
+                    <RequiredValue>extern</RequiredValue>
+                    <NominalScaledType/>
+                </Constraint>
             </Attribute>
             <Attribute AttributeDataType="xs:string" Name="outputType">
                 <Description>Output type of the sensor</Description>
-                <Constraint Name="OutputTypeConstraint"/>
+                <Constraint Name="OutputTypeConstraint">
+                    <RequiredValue>acceleration</RequiredValue>
+                    <RequiredValue>angle</RequiredValue>
+                    <RequiredValue>point cloud</RequiredValue>
+                    <RequiredValue>distance</RequiredValue>
+                    <RequiredValue>velocity</RequiredValue>
+                    <RequiredValue>image</RequiredValue>
+                    <RequiredValue>identification</RequiredValue>
+                    <RequiredValue>force</RequiredValue>
+                    <RequiredValue>torque</RequiredValue>
+                    <RequiredValue>force torque</RequiredValue>
+                    <RequiredValue>position</RequiredValue>
+                    <RequiredValue>orientation</RequiredValue>
+                    <RequiredValue>pose</RequiredValue>
+                    <RequiredValue>switch</RequiredValue>
+                    <NominalScaledType/>
+                </Constraint>
             </Attribute>
             <RoleClass Name="VisualSensor" RefBaseClassPath="ReAppRoleClassLib/Sensor">
                 <Attribute AttributeDataType="xs:complexType" Name="resolution" Unit="">
@@ -507,7 +580,11 @@
                 </Attribute>
                 <Attribute AttributeDataType="xs:string" Name="operationEnvioronment">
                     <Description>Where could this image sensor be used: indoor or outdoor</Description>
-                    <Constraint Name="envioronmentConstraint"/>
+                    <Constraint Name="envioronmentConstraint">
+                        <RequiredValue>indoor</RequiredValue>
+                        <RequiredValue>outdoor</RequiredValue>
+                        <NominalScaledType/>
+                    </Constraint>
                 </Attribute>
                 <Attribute AttributeDataType="xs:complexType" Name="viewField" Unit="">
                     <Description>The horizontal, vertical and diagonal field of view in degree: [hView, vView]</Description>
@@ -552,7 +629,18 @@
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="lightType">
                         <Description>Properties of light (radiation, defined for a certain range of wavelengths) and source of light</Description>
-                        <Constraint Name="LightTypeConstraint"/>
+                        <Constraint Name="LightTypeConstraint">
+                            <RequiredValue>blue light</RequiredValue>
+                            <RequiredValue>green light</RequiredValue>
+                            <RequiredValue>infrared light</RequiredValue>
+                            <RequiredValue>laser diode, infrared light</RequiredValue>
+                            <RequiredValue>laser diode, red light</RequiredValue>
+                            <RequiredValue>multi-colored LED</RequiredValue>
+                            <RequiredValue>red light, non-polarized</RequiredValue>
+                            <RequiredValue>red light, polarized</RequiredValue>
+                            <RequiredValue>white light</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <RoleClass Name="Laser" RefBaseClassPath="ReAppRoleClassLib/Sensor/DistanceSensor/OpticalDistanceSensor"/>
                     <RoleClass Name="InfraredSensor" RefBaseClassPath="ReAppRoleClassLib/Sensor/DistanceSensor/OpticalDistanceSensor"/>
@@ -671,7 +759,18 @@
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="lightType">
                         <Description>Properties of light (radiation, defined for a certain range of wavelengths) and source of light</Description>
-                        <Constraint Name="LightTypeConstraint"/>
+                        <Constraint Name="LightTypeConstraint">
+                            <RequiredValue>blue light</RequiredValue>
+                            <RequiredValue>green light</RequiredValue>
+                            <RequiredValue>infrared light</RequiredValue>
+                            <RequiredValue>laser diode, infrared light</RequiredValue>
+                            <RequiredValue>laser diode, red light</RequiredValue>
+                            <RequiredValue>multi-colored LED</RequiredValue>
+                            <RequiredValue>red light, non-polarized</RequiredValue>
+                            <RequiredValue>red light, polarized</RequiredValue>
+                            <RequiredValue>white light</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <RoleClass Name="OneWayLightBarrier" RefBaseClassPath="ReAppRoleClassLib/Sensor/OptoelectronicSensor/LightBarier"/>
                     <RoleClass Name="ReflectionLightBarrier" RefBaseClassPath="ReAppRoleClassLib/Sensor/OptoelectronicSensor/LightBarier"/>
@@ -714,7 +813,11 @@
                 <RoleClass Name="LaserScanner" RefBaseClassPath="ReAppRoleClassLib/Sensor/OptoelectronicSensor">
                     <Attribute AttributeDataType="xs:string" Name="operationEnvioronment">
                         <Description>Where could this device be used: indoor or outdoor</Description>
-                        <Constraint Name="envioronmentConstraint"/>
+                        <Constraint Name="envioronmentConstraint">
+                            <RequiredValue>indoor</RequiredValue>
+                            <RequiredValue>outdoor</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:double" Name="startAngle" Unit="Degrees">
                         <Description>The start angle of the scan - zero is in front of the device</Description>
@@ -773,7 +876,18 @@
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="lightType">
                         <Description>Properties of light (radiation, defined for a certain range of wavelengths) and source of light</Description>
-                        <Constraint Name="LightTypeConstraint"/>
+                        <Constraint Name="LightTypeConstraint">
+                            <RequiredValue>blue light</RequiredValue>
+                            <RequiredValue>green light</RequiredValue>
+                            <RequiredValue>infrared light</RequiredValue>
+                            <RequiredValue>laser diode, infrared light</RequiredValue>
+                            <RequiredValue>laser diode, red light</RequiredValue>
+                            <RequiredValue>multi-colored LED</RequiredValue>
+                            <RequiredValue>red light, non-polarized</RequiredValue>
+                            <RequiredValue>red light, polarized</RequiredValue>
+                            <RequiredValue>white light</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                 </RoleClass>
             </RoleClass>
@@ -805,7 +919,18 @@
                         </Attribute>
                         <Attribute AttributeDataType="xs:string" Name="radioProtocol">
                             <Description>Information on the kind of used radio protocoll</Description>
-                            <Constraint Name="RadioProtocolConstraint"/>
+                            <Constraint Name="RadioProtocolConstraint">
+                                <RequiredValue>Bluetooth</RequiredValue>
+                                <RequiredValue>DECT</RequiredValue>
+                                <RequiredValue>HomeRF</RequiredValue>
+                                <RequiredValue>IEEE 802.11</RequiredValue>
+                                <RequiredValue>IEEE 802.11 a</RequiredValue>
+                                <RequiredValue>IEEE 802.11 b</RequiredValue>
+                                <RequiredValue>IEEE 802.11 g</RequiredValue>
+                                <RequiredValue>IEEE 802.11 h</RequiredValue>
+                                <RequiredValue>IEEE 802.11 n</RequiredValue>
+                                <NominalScaledType/>
+                            </Constraint>
                         </Attribute>
                         <Attribute AttributeDataType="xs:double" Name="maxReach" Unit="m">
                             <Description>Maximum path which can be covered or bridged</Description>
@@ -846,7 +971,11 @@
             <ExternalInterface ID="97979dea-f6c7-4532-ae96-1b8fc1532a64" Name="InstanceOfCOLLADAInterface" RefBaseClassPath="AutomationMLInterfaceClassLib/AutomationMLBaseInterface/ExternalDataConnector/COLLADAInterface">
                 <Attribute AttributeDataType="xs:string" Name="refType">
                     <Description>Reference type of the ColladaInterface</Description>
-                    <Constraint Name="refTypeConstraint"/>
+                    <Constraint Name="refTypeConstraint">
+                        <RequiredValue>explicit</RequiredValue>
+                        <RequiredValue>implicit</RequiredValue>
+                        <NominalScaledType/>
+                    </Constraint>
                 </Attribute>
                 <Attribute AttributeDataType="xs:anyURI" Name="refURI">
                     <Description>Reference URI of the ColladaInterface</Description>
@@ -870,7 +999,11 @@
                 <Attribute AttributeDataType="xs:string" Name="refType">
                     <Description>Reference type of the ColladaInterface</Description>
                     <Value>explicit</Value>
-                    <Constraint Name="refTypeConstraint"/>
+                    <Constraint Name="refTypeConstraint">
+                        <RequiredValue>explicit</RequiredValue>
+                        <RequiredValue>implicit</RequiredValue>
+                        <NominalScaledType/>
+                    </Constraint>
                 </Attribute>
                 <Attribute AttributeDataType="xs:anyURI" Name="refURI">
                     <Description>Reference URI of the ColladaInterface</Description>
@@ -1011,13 +1144,28 @@
                         <Attribute AttributeDataType="xs:string" Name="protocol1">
                             <Description>supported ethernet protocol 1</Description>
                             <Value>TCP/IP</Value>
-                            <Constraint Name="protocolConstraint"/>
+                            <Constraint Name="protocolConstraint">
+                                <RequiredValue>TCP/IP</RequiredValue>
+                                <RequiredValue>UDP</RequiredValue>
+                                <RequiredValue>ProfiNet</RequiredValue>
+                                <RequiredValue>ProfiBus</RequiredValue>
+                                <RequiredValue>PowerLink</RequiredValue>
+                                <RequiredValue>EtherNet/IP</RequiredValue>
+                                <RequiredValue>EtherCAT</RequiredValue>
+                                <RequiredValue>SercosIII</RequiredValue>
+                                <NominalScaledType/>
+                            </Constraint>
                         </Attribute>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="type">
                         <Description>Type of the ethernet communication</Description>
                         <Value>100 BaseT</Value>
-                        <Constraint Name="EthernetConstraint"/>
+                        <Constraint Name="EthernetConstraint">
+                            <RequiredValue>10 BaseT</RequiredValue>
+                            <RequiredValue>100 BaseT</RequiredValue>
+                            <RequiredValue>1000 BaseT</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="IPAddress">
                         <Description>IP address of the ethernet physical device</Description>
@@ -1069,7 +1217,11 @@
                 <Attribute AttributeDataType="xs:string" Name="refType">
                     <Description>Reference type of the ColladaInterface</Description>
                     <Value>explicit</Value>
-                    <Constraint Name="refTypeConstraint"/>
+                    <Constraint Name="refTypeConstraint">
+                        <RequiredValue>explicit</RequiredValue>
+                        <RequiredValue>implicit</RequiredValue>
+                        <NominalScaledType/>
+                    </Constraint>
                 </Attribute>
                 <Attribute AttributeDataType="xs:anyURI" Name="refURI">
                     <Description>Reference URI of the ColladaInterface</Description>
@@ -1081,7 +1233,11 @@
                 <RoleRequirements RefBaseRoleClassPath="ReAppRoleClassLib/Sensor/OptoelectronicSensor/LaserScanner">
                     <Attribute AttributeDataType="xs:string" Name="operationEnvioronment">
                         <Description>Where could this device be used: indoor or outdoor</Description>
-                        <Constraint Name="envioronmentConstraint"/>
+                        <Constraint Name="envioronmentConstraint">
+                            <RequiredValue>indoor</RequiredValue>
+                            <RequiredValue>outdoor</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:double" Name="startAngle" Unit="Degrees">
                         <Description>The start angle of the scan - zero is in front of the device</Description>
@@ -1150,22 +1306,54 @@
                     <Attribute AttributeDataType="xs:string" Name="senseDimension">
                         <Description>Dimension that the sensor can sense</Description>
                         <Value>2D</Value>
-                        <Constraint Name="SenseDimensionConstraint"/>
+                        <Constraint Name="SenseDimensionConstraint">
+                            <RequiredValue>1D</RequiredValue>
+                            <RequiredValue>2D</RequiredValue>
+                            <RequiredValue>3D</RequiredValue>
+                            <RequiredValue>4D</RequiredValue>
+                            <RequiredValue>5D</RequiredValue>
+                            <RequiredValue>6D</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="measurementPrinciple">
                         <Description>measurement principle of the sensor</Description>
                         <Value>active</Value>
-                        <Constraint Name="MeasurementPrincipleConstraint"/>
+                        <Constraint Name="MeasurementPrincipleConstraint">
+                            <RequiredValue>active</RequiredValue>
+                            <RequiredValue>passive</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="relationToRobot">
                         <Description>relation of to robot of the sensor</Description>
                         <Value>extern</Value>
-                        <Constraint Name="RelationToRobotConstraint"/>
+                        <Constraint Name="RelationToRobotConstraint">
+                            <RequiredValue>intern</RequiredValue>
+                            <RequiredValue>extern</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="outputType">
                         <Description>Output type of the sensor</Description>
                         <Value>point cloud</Value>
-                        <Constraint Name="OutputTypeConstraint"/>
+                        <Constraint Name="OutputTypeConstraint">
+                            <RequiredValue>acceleration</RequiredValue>
+                            <RequiredValue>angle</RequiredValue>
+                            <RequiredValue>point cloud</RequiredValue>
+                            <RequiredValue>distance</RequiredValue>
+                            <RequiredValue>velocity</RequiredValue>
+                            <RequiredValue>image</RequiredValue>
+                            <RequiredValue>identification</RequiredValue>
+                            <RequiredValue>force</RequiredValue>
+                            <RequiredValue>torque</RequiredValue>
+                            <RequiredValue>force torque</RequiredValue>
+                            <RequiredValue>position</RequiredValue>
+                            <RequiredValue>orientation</RequiredValue>
+                            <RequiredValue>pose</RequiredValue>
+                            <RequiredValue>switch</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                 </RoleRequirements>
             </InternalElement>
@@ -1179,7 +1367,12 @@
                         <Value>RS232</Value>
                         <Attribute AttributeDataType="xs:string" Name="protocol1">
                             <Description>supported serial protocol 1</Description>
-                            <Constraint Name="protocolConstraint"/>
+                            <Constraint Name="protocolConstraint">
+                                <RequiredValue>RS232</RequiredValue>
+                                <RequiredValue>RS422</RequiredValue>
+                                <RequiredValue>RS485</RequiredValue>
+                                <NominalScaledType/>
+                            </Constraint>
                         </Attribute>
                     </Attribute>
                 </RoleRequirements>
@@ -1194,7 +1387,12 @@
                         <Value>RS422</Value>
                         <Attribute AttributeDataType="xs:string" Name="protocol1">
                             <Description>supported serial protocol 1</Description>
-                            <Constraint Name="protocolConstraint"/>
+                            <Constraint Name="protocolConstraint">
+                                <RequiredValue>RS232</RequiredValue>
+                                <RequiredValue>RS422</RequiredValue>
+                                <RequiredValue>RS485</RequiredValue>
+                                <NominalScaledType/>
+                            </Constraint>
                         </Attribute>
                     </Attribute>
                 </RoleRequirements>
@@ -1283,7 +1481,11 @@
                     <Attribute AttributeDataType="xs:string" Name="operationEnvioronment">
                         <Description>Where could this image sensor be used: indoor or outdoor</Description>
                         <Value>indoor</Value>
-                        <Constraint Name="envioronmentConstraint"/>
+                        <Constraint Name="envioronmentConstraint">
+                            <RequiredValue>indoor</RequiredValue>
+                            <RequiredValue>outdoor</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:complexType" Name="viewField" Unit="">
                         <Description>The horizontal, vertical and diagonal field of view in degree: [hView, vView, dView]</Description>
@@ -1301,22 +1503,54 @@
                     <Attribute AttributeDataType="xs:string" Name="senseDimension">
                         <Description>Dimension that the sensor can sense</Description>
                         <Value>2D</Value>
-                        <Constraint Name="SenseDimensionConstraint"/>
+                        <Constraint Name="SenseDimensionConstraint">
+                            <RequiredValue>1D</RequiredValue>
+                            <RequiredValue>2D</RequiredValue>
+                            <RequiredValue>3D</RequiredValue>
+                            <RequiredValue>4D</RequiredValue>
+                            <RequiredValue>5D</RequiredValue>
+                            <RequiredValue>6D</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="measurementPrinciple">
                         <Description>measurement principle of the sensor</Description>
                         <Value>passive</Value>
-                        <Constraint Name="MeasurementPrincipleConstraint"/>
+                        <Constraint Name="MeasurementPrincipleConstraint">
+                            <RequiredValue>active</RequiredValue>
+                            <RequiredValue>passive</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="relationToRobot">
                         <Description>relation of to robot of the sensor</Description>
                         <Value>extern</Value>
-                        <Constraint Name="RelationToRobotConstraint"/>
+                        <Constraint Name="RelationToRobotConstraint">
+                            <RequiredValue>intern</RequiredValue>
+                            <RequiredValue>extern</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="outputType">
                         <Description>Output type of the sensor</Description>
                         <Value>image</Value>
-                        <Constraint Name="OutputTypeConstraint"/>
+                        <Constraint Name="OutputTypeConstraint">
+                            <RequiredValue>acceleration</RequiredValue>
+                            <RequiredValue>angle</RequiredValue>
+                            <RequiredValue>point cloud</RequiredValue>
+                            <RequiredValue>distance</RequiredValue>
+                            <RequiredValue>velocity</RequiredValue>
+                            <RequiredValue>image</RequiredValue>
+                            <RequiredValue>identification</RequiredValue>
+                            <RequiredValue>force</RequiredValue>
+                            <RequiredValue>torque</RequiredValue>
+                            <RequiredValue>force torque</RequiredValue>
+                            <RequiredValue>position</RequiredValue>
+                            <RequiredValue>orientation</RequiredValue>
+                            <RequiredValue>pose</RequiredValue>
+                            <RequiredValue>switch</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                 </RoleRequirements>
             </InternalElement>
@@ -1331,7 +1565,18 @@
                     <Attribute AttributeDataType="xs:string" Name="lightType">
                         <Description>Properties of light (radiation, defined for a certain range of wavelengths) and source of light</Description>
                         <Value>infrared light</Value>
-                        <Constraint Name="LightTypeConstraint"/>
+                        <Constraint Name="LightTypeConstraint">
+                            <RequiredValue>blue light</RequiredValue>
+                            <RequiredValue>green light</RequiredValue>
+                            <RequiredValue>infrared light</RequiredValue>
+                            <RequiredValue>laser diode, infrared light</RequiredValue>
+                            <RequiredValue>laser diode, red light</RequiredValue>
+                            <RequiredValue>multi-colored LED</RequiredValue>
+                            <RequiredValue>red light, non-polarized</RequiredValue>
+                            <RequiredValue>red light, polarized</RequiredValue>
+                            <RequiredValue>white light</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:double" Name="relativeRepeatPrecision" Unit="Percent">
                         <Description>Output signal changes under determined conditions relating to the output signal, expressed in percent</Description>
@@ -1360,22 +1605,54 @@
                     <Attribute AttributeDataType="xs:string" Name="senseDimension">
                         <Description>Dimension that the sensor can sense</Description>
                         <Value>3D</Value>
-                        <Constraint Name="SenseDimensionConstraint"/>
+                        <Constraint Name="SenseDimensionConstraint">
+                            <RequiredValue>1D</RequiredValue>
+                            <RequiredValue>2D</RequiredValue>
+                            <RequiredValue>3D</RequiredValue>
+                            <RequiredValue>4D</RequiredValue>
+                            <RequiredValue>5D</RequiredValue>
+                            <RequiredValue>6D</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="measurementPrinciple">
                         <Description>measurement principle of the sensor</Description>
                         <Value>active</Value>
-                        <Constraint Name="MeasurementPrincipleConstraint"/>
+                        <Constraint Name="MeasurementPrincipleConstraint">
+                            <RequiredValue>active</RequiredValue>
+                            <RequiredValue>passive</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="relationToRobot">
                         <Description>relation of to robot of the sensor</Description>
                         <Value>extern</Value>
-                        <Constraint Name="RelationToRobotConstraint"/>
+                        <Constraint Name="RelationToRobotConstraint">
+                            <RequiredValue>intern</RequiredValue>
+                            <RequiredValue>extern</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="outputType">
                         <Description>Output type of the sensor</Description>
                         <Value>point cloud</Value>
-                        <Constraint Name="OutputTypeConstraint"/>
+                        <Constraint Name="OutputTypeConstraint">
+                            <RequiredValue>acceleration</RequiredValue>
+                            <RequiredValue>angle</RequiredValue>
+                            <RequiredValue>point cloud</RequiredValue>
+                            <RequiredValue>distance</RequiredValue>
+                            <RequiredValue>velocity</RequiredValue>
+                            <RequiredValue>image</RequiredValue>
+                            <RequiredValue>identification</RequiredValue>
+                            <RequiredValue>force</RequiredValue>
+                            <RequiredValue>torque</RequiredValue>
+                            <RequiredValue>force torque</RequiredValue>
+                            <RequiredValue>position</RequiredValue>
+                            <RequiredValue>orientation</RequiredValue>
+                            <RequiredValue>pose</RequiredValue>
+                            <RequiredValue>switch</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                 </RoleRequirements>
             </InternalElement>
@@ -1383,19 +1660,51 @@
                 <RoleRequirements RefBaseRoleClassPath="ReAppRoleClassLib/Sensor/AccelerationSensor/Accelerometer">
                     <Attribute AttributeDataType="xs:string" Name="senseDimension">
                         <Description>Dimension that the sensor can sense</Description>
-                        <Constraint Name="SenseDimensionConstraint"/>
+                        <Constraint Name="SenseDimensionConstraint">
+                            <RequiredValue>1D</RequiredValue>
+                            <RequiredValue>2D</RequiredValue>
+                            <RequiredValue>3D</RequiredValue>
+                            <RequiredValue>4D</RequiredValue>
+                            <RequiredValue>5D</RequiredValue>
+                            <RequiredValue>6D</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="measurementPrinciple">
                         <Description>measurement principle of the sensor</Description>
-                        <Constraint Name="MeasurementPrincipleConstraint"/>
+                        <Constraint Name="MeasurementPrincipleConstraint">
+                            <RequiredValue>active</RequiredValue>
+                            <RequiredValue>passive</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="relationToRobot">
                         <Description>relation of to robot of the sensor</Description>
-                        <Constraint Name="RelationToRobotConstraint"/>
+                        <Constraint Name="RelationToRobotConstraint">
+                            <RequiredValue>intern</RequiredValue>
+                            <RequiredValue>extern</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="outputType">
                         <Description>Output type of the sensor</Description>
-                        <Constraint Name="OutputTypeConstraint"/>
+                        <Constraint Name="OutputTypeConstraint">
+                            <RequiredValue>acceleration</RequiredValue>
+                            <RequiredValue>angle</RequiredValue>
+                            <RequiredValue>point cloud</RequiredValue>
+                            <RequiredValue>distance</RequiredValue>
+                            <RequiredValue>velocity</RequiredValue>
+                            <RequiredValue>image</RequiredValue>
+                            <RequiredValue>identification</RequiredValue>
+                            <RequiredValue>force</RequiredValue>
+                            <RequiredValue>torque</RequiredValue>
+                            <RequiredValue>force torque</RequiredValue>
+                            <RequiredValue>position</RequiredValue>
+                            <RequiredValue>orientation</RequiredValue>
+                            <RequiredValue>pose</RequiredValue>
+                            <RequiredValue>switch</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                 </RoleRequirements>
             </InternalElement>
@@ -1403,19 +1712,51 @@
                 <RoleRequirements RefBaseRoleClassPath="ReAppRoleClassLib/Sensor/Microphone">
                     <Attribute AttributeDataType="xs:string" Name="senseDimension">
                         <Description>Dimension that the sensor can sense</Description>
-                        <Constraint Name="SenseDimensionConstraint"/>
+                        <Constraint Name="SenseDimensionConstraint">
+                            <RequiredValue>1D</RequiredValue>
+                            <RequiredValue>2D</RequiredValue>
+                            <RequiredValue>3D</RequiredValue>
+                            <RequiredValue>4D</RequiredValue>
+                            <RequiredValue>5D</RequiredValue>
+                            <RequiredValue>6D</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="measurementPrinciple">
                         <Description>measurement principle of the sensor</Description>
-                        <Constraint Name="MeasurementPrincipleConstraint"/>
+                        <Constraint Name="MeasurementPrincipleConstraint">
+                            <RequiredValue>active</RequiredValue>
+                            <RequiredValue>passive</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="relationToRobot">
                         <Description>relation of to robot of the sensor</Description>
-                        <Constraint Name="RelationToRobotConstraint"/>
+                        <Constraint Name="RelationToRobotConstraint">
+                            <RequiredValue>intern</RequiredValue>
+                            <RequiredValue>extern</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="outputType">
                         <Description>Output type of the sensor</Description>
-                        <Constraint Name="OutputTypeConstraint"/>
+                        <Constraint Name="OutputTypeConstraint">
+                            <RequiredValue>acceleration</RequiredValue>
+                            <RequiredValue>angle</RequiredValue>
+                            <RequiredValue>point cloud</RequiredValue>
+                            <RequiredValue>distance</RequiredValue>
+                            <RequiredValue>velocity</RequiredValue>
+                            <RequiredValue>image</RequiredValue>
+                            <RequiredValue>identification</RequiredValue>
+                            <RequiredValue>force</RequiredValue>
+                            <RequiredValue>torque</RequiredValue>
+                            <RequiredValue>force torque</RequiredValue>
+                            <RequiredValue>position</RequiredValue>
+                            <RequiredValue>orientation</RequiredValue>
+                            <RequiredValue>pose</RequiredValue>
+                            <RequiredValue>switch</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                 </RoleRequirements>
             </InternalElement>
@@ -1423,19 +1764,51 @@
                 <RoleRequirements RefBaseRoleClassPath="ReAppRoleClassLib/Sensor/Microphone">
                     <Attribute AttributeDataType="xs:string" Name="senseDimension">
                         <Description>Dimension that the sensor can sense</Description>
-                        <Constraint Name="SenseDimensionConstraint"/>
+                        <Constraint Name="SenseDimensionConstraint">
+                            <RequiredValue>1D</RequiredValue>
+                            <RequiredValue>2D</RequiredValue>
+                            <RequiredValue>3D</RequiredValue>
+                            <RequiredValue>4D</RequiredValue>
+                            <RequiredValue>5D</RequiredValue>
+                            <RequiredValue>6D</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="measurementPrinciple">
                         <Description>measurement principle of the sensor</Description>
-                        <Constraint Name="MeasurementPrincipleConstraint"/>
+                        <Constraint Name="MeasurementPrincipleConstraint">
+                            <RequiredValue>active</RequiredValue>
+                            <RequiredValue>passive</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="relationToRobot">
                         <Description>relation of to robot of the sensor</Description>
-                        <Constraint Name="RelationToRobotConstraint"/>
+                        <Constraint Name="RelationToRobotConstraint">
+                            <RequiredValue>intern</RequiredValue>
+                            <RequiredValue>extern</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="outputType">
                         <Description>Output type of the sensor</Description>
-                        <Constraint Name="OutputTypeConstraint"/>
+                        <Constraint Name="OutputTypeConstraint">
+                            <RequiredValue>acceleration</RequiredValue>
+                            <RequiredValue>angle</RequiredValue>
+                            <RequiredValue>point cloud</RequiredValue>
+                            <RequiredValue>distance</RequiredValue>
+                            <RequiredValue>velocity</RequiredValue>
+                            <RequiredValue>image</RequiredValue>
+                            <RequiredValue>identification</RequiredValue>
+                            <RequiredValue>force</RequiredValue>
+                            <RequiredValue>torque</RequiredValue>
+                            <RequiredValue>force torque</RequiredValue>
+                            <RequiredValue>position</RequiredValue>
+                            <RequiredValue>orientation</RequiredValue>
+                            <RequiredValue>pose</RequiredValue>
+                            <RequiredValue>switch</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                 </RoleRequirements>
             </InternalElement>
@@ -1443,19 +1816,51 @@
                 <RoleRequirements RefBaseRoleClassPath="ReAppRoleClassLib/Sensor/Microphone">
                     <Attribute AttributeDataType="xs:string" Name="senseDimension">
                         <Description>Dimension that the sensor can sense</Description>
-                        <Constraint Name="SenseDimensionConstraint"/>
+                        <Constraint Name="SenseDimensionConstraint">
+                            <RequiredValue>1D</RequiredValue>
+                            <RequiredValue>2D</RequiredValue>
+                            <RequiredValue>3D</RequiredValue>
+                            <RequiredValue>4D</RequiredValue>
+                            <RequiredValue>5D</RequiredValue>
+                            <RequiredValue>6D</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="measurementPrinciple">
                         <Description>measurement principle of the sensor</Description>
-                        <Constraint Name="MeasurementPrincipleConstraint"/>
+                        <Constraint Name="MeasurementPrincipleConstraint">
+                            <RequiredValue>active</RequiredValue>
+                            <RequiredValue>passive</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="relationToRobot">
                         <Description>relation of to robot of the sensor</Description>
-                        <Constraint Name="RelationToRobotConstraint"/>
+                        <Constraint Name="RelationToRobotConstraint">
+                            <RequiredValue>intern</RequiredValue>
+                            <RequiredValue>extern</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="outputType">
                         <Description>Output type of the sensor</Description>
-                        <Constraint Name="OutputTypeConstraint"/>
+                        <Constraint Name="OutputTypeConstraint">
+                            <RequiredValue>acceleration</RequiredValue>
+                            <RequiredValue>angle</RequiredValue>
+                            <RequiredValue>point cloud</RequiredValue>
+                            <RequiredValue>distance</RequiredValue>
+                            <RequiredValue>velocity</RequiredValue>
+                            <RequiredValue>image</RequiredValue>
+                            <RequiredValue>identification</RequiredValue>
+                            <RequiredValue>force</RequiredValue>
+                            <RequiredValue>torque</RequiredValue>
+                            <RequiredValue>force torque</RequiredValue>
+                            <RequiredValue>position</RequiredValue>
+                            <RequiredValue>orientation</RequiredValue>
+                            <RequiredValue>pose</RequiredValue>
+                            <RequiredValue>switch</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                 </RoleRequirements>
             </InternalElement>
@@ -1463,19 +1868,51 @@
                 <RoleRequirements RefBaseRoleClassPath="ReAppRoleClassLib/Sensor/Microphone">
                     <Attribute AttributeDataType="xs:string" Name="senseDimension">
                         <Description>Dimension that the sensor can sense</Description>
-                        <Constraint Name="SenseDimensionConstraint"/>
+                        <Constraint Name="SenseDimensionConstraint">
+                            <RequiredValue>1D</RequiredValue>
+                            <RequiredValue>2D</RequiredValue>
+                            <RequiredValue>3D</RequiredValue>
+                            <RequiredValue>4D</RequiredValue>
+                            <RequiredValue>5D</RequiredValue>
+                            <RequiredValue>6D</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="measurementPrinciple">
                         <Description>measurement principle of the sensor</Description>
-                        <Constraint Name="MeasurementPrincipleConstraint"/>
+                        <Constraint Name="MeasurementPrincipleConstraint">
+                            <RequiredValue>active</RequiredValue>
+                            <RequiredValue>passive</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="relationToRobot">
                         <Description>relation of to robot of the sensor</Description>
-                        <Constraint Name="RelationToRobotConstraint"/>
+                        <Constraint Name="RelationToRobotConstraint">
+                            <RequiredValue>intern</RequiredValue>
+                            <RequiredValue>extern</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="outputType">
                         <Description>Output type of the sensor</Description>
-                        <Constraint Name="OutputTypeConstraint"/>
+                        <Constraint Name="OutputTypeConstraint">
+                            <RequiredValue>acceleration</RequiredValue>
+                            <RequiredValue>angle</RequiredValue>
+                            <RequiredValue>point cloud</RequiredValue>
+                            <RequiredValue>distance</RequiredValue>
+                            <RequiredValue>velocity</RequiredValue>
+                            <RequiredValue>image</RequiredValue>
+                            <RequiredValue>identification</RequiredValue>
+                            <RequiredValue>force</RequiredValue>
+                            <RequiredValue>torque</RequiredValue>
+                            <RequiredValue>force torque</RequiredValue>
+                            <RequiredValue>position</RequiredValue>
+                            <RequiredValue>orientation</RequiredValue>
+                            <RequiredValue>pose</RequiredValue>
+                            <RequiredValue>switch</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                 </RoleRequirements>
             </InternalElement>
@@ -1485,11 +1922,22 @@
             <InternalElement ID="5a7b4ea8-fdee-4945-a22a-6faf5daa23a4" Name="USBCommunicationModule">
                 <RoleRequirements RefBaseRoleClassPath="ReAppCommunicationRoleClassLib/USBPhysicalDevice">
                     <Attribute AttributeDataType="xs:string" Name="transmissionSpeed">
-                        <Constraint Name="transmissionSpeedConstraint"/>
+                        <Constraint Name="transmissionSpeedConstraint">
+                            <RequiredValue>low-speed</RequiredValue>
+                            <RequiredValue>full-speed</RequiredValue>
+                            <RequiredValue>high-speed</RequiredValue>
+                            <RequiredValue>super-speed</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="protocol"/>
                     <Attribute AttributeDataType="xs:string" Name="type">
-                        <Constraint Name="EthernetConstraint"/>
+                        <Constraint Name="EthernetConstraint">
+                            <RequiredValue>1.0</RequiredValue>
+                            <RequiredValue>2.0</RequiredValue>
+                            <RequiredValue>3.0</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                 </RoleRequirements>
             </InternalElement>
@@ -1511,7 +1959,11 @@
                 <Attribute AttributeDataType="xs:string" Name="refType">
                     <Description>Reference type of the ColladaInterface</Description>
                     <Value>explicit</Value>
-                    <Constraint Name="refTypeConstraint"/>
+                    <Constraint Name="refTypeConstraint">
+                        <RequiredValue>explicit</RequiredValue>
+                        <RequiredValue>implicit</RequiredValue>
+                        <NominalScaledType/>
+                    </Constraint>
                 </Attribute>
                 <Attribute AttributeDataType="xs:anyURI" Name="refURI">
                     <Description>Reference URI of the ColladaInterface</Description>
@@ -1691,7 +2143,11 @@
                 <Attribute AttributeDataType="xs:string" Name="refType">
                     <Description>Reference type of the ColladaInterface</Description>
                     <Value>explicit</Value>
-                    <Constraint Name="refTypeConstraint"/>
+                    <Constraint Name="refTypeConstraint">
+                        <RequiredValue>explicit</RequiredValue>
+                        <RequiredValue>implicit</RequiredValue>
+                        <NominalScaledType/>
+                    </Constraint>
                 </Attribute>
                 <Attribute AttributeDataType="xs:anyURI" Name="refURI">
                     <Description>Reference URI of the ColladaInterface</Description>
@@ -1832,13 +2288,28 @@
                         <Attribute AttributeDataType="xs:string" Name="protocol1">
                             <Description>supported ethernet protocol 1</Description>
                             <Value>TCP/IP</Value>
-                            <Constraint Name="protocolConstraint"/>
+                            <Constraint Name="protocolConstraint">
+                                <RequiredValue>TCP/IP</RequiredValue>
+                                <RequiredValue>UDP</RequiredValue>
+                                <RequiredValue>ProfiNet</RequiredValue>
+                                <RequiredValue>ProfiBus</RequiredValue>
+                                <RequiredValue>PowerLink</RequiredValue>
+                                <RequiredValue>EtherNet/IP</RequiredValue>
+                                <RequiredValue>EtherCAT</RequiredValue>
+                                <RequiredValue>SercosIII</RequiredValue>
+                                <NominalScaledType/>
+                            </Constraint>
                         </Attribute>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="type">
                         <Description>Type of the ethernet communication</Description>
                         <Value>100 BaseT</Value>
-                        <Constraint Name="EthernetConstraint"/>
+                        <Constraint Name="EthernetConstraint">
+                            <RequiredValue>10 BaseT</RequiredValue>
+                            <RequiredValue>100 BaseT</RequiredValue>
+                            <RequiredValue>1000 BaseT</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="IPAddress">
                         <Description>IP address of the ethernet physical device</Description>
@@ -1890,7 +2361,11 @@
                 <Attribute AttributeDataType="xs:string" Name="refType">
                     <Description>Reference type of the ColladaInterface</Description>
                     <Value>explicit</Value>
-                    <Constraint Name="refTypeConstraint"/>
+                    <Constraint Name="refTypeConstraint">
+                        <RequiredValue>explicit</RequiredValue>
+                        <RequiredValue>implicit</RequiredValue>
+                        <NominalScaledType/>
+                    </Constraint>
                 </Attribute>
                 <Attribute AttributeDataType="xs:anyURI" Name="refURI">
                     <Description>Reference URI of the ColladaInterface</Description>
@@ -1912,7 +2387,11 @@
                     <Attribute AttributeDataType="xs:string" Name="operationEnvioronment">
                         <Description>Where could this image sensor be used: indoor or outdoor</Description>
                         <Value>indoor</Value>
-                        <Constraint Name="envioronmentConstraint"/>
+                        <Constraint Name="envioronmentConstraint">
+                            <RequiredValue>indoor</RequiredValue>
+                            <RequiredValue>outdoor</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:complexType" Name="viewField" Unit="">
                         <Description>The horizontal, vertical and diagonal field of view in degree: [hView, vView]</Description>
@@ -1926,22 +2405,54 @@
                     <Attribute AttributeDataType="xs:string" Name="senseDimension">
                         <Description>Dimension that the sensor can sense</Description>
                         <Value>2D</Value>
-                        <Constraint Name="SenseDimensionConstraint"/>
+                        <Constraint Name="SenseDimensionConstraint">
+                            <RequiredValue>1D</RequiredValue>
+                            <RequiredValue>2D</RequiredValue>
+                            <RequiredValue>3D</RequiredValue>
+                            <RequiredValue>4D</RequiredValue>
+                            <RequiredValue>5D</RequiredValue>
+                            <RequiredValue>6D</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="measurementPrinciple">
                         <Description>measurement principle of the sensor</Description>
                         <Value>passive</Value>
-                        <Constraint Name="MeasurementPrincipleConstraint"/>
+                        <Constraint Name="MeasurementPrincipleConstraint">
+                            <RequiredValue>active</RequiredValue>
+                            <RequiredValue>passive</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="relationToRobot">
                         <Description>relation of to robot of the sensor</Description>
                         <Value>extern</Value>
-                        <Constraint Name="RelationToRobotConstraint"/>
+                        <Constraint Name="RelationToRobotConstraint">
+                            <RequiredValue>intern</RequiredValue>
+                            <RequiredValue>extern</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="outputType">
                         <Description>Output type of the sensor</Description>
                         <Value>image</Value>
-                        <Constraint Name="OutputTypeConstraint"/>
+                        <Constraint Name="OutputTypeConstraint">
+                            <RequiredValue>acceleration</RequiredValue>
+                            <RequiredValue>angle</RequiredValue>
+                            <RequiredValue>point cloud</RequiredValue>
+                            <RequiredValue>distance</RequiredValue>
+                            <RequiredValue>velocity</RequiredValue>
+                            <RequiredValue>image</RequiredValue>
+                            <RequiredValue>identification</RequiredValue>
+                            <RequiredValue>force</RequiredValue>
+                            <RequiredValue>torque</RequiredValue>
+                            <RequiredValue>force torque</RequiredValue>
+                            <RequiredValue>position</RequiredValue>
+                            <RequiredValue>orientation</RequiredValue>
+                            <RequiredValue>pose</RequiredValue>
+                            <RequiredValue>switch</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                 </RoleRequirements>
             </InternalElement>
@@ -1952,17 +2463,40 @@
                         <Attribute AttributeDataType="xs:string" Name="protocol1">
                             <Description>supported ethernet protocol 1</Description>
                             <Value>TCP/IP</Value>
-                            <Constraint Name="protocolConstraint"/>
+                            <Constraint Name="protocolConstraint">
+                                <RequiredValue>TCP/IP</RequiredValue>
+                                <RequiredValue>ProfiNet</RequiredValue>
+                                <RequiredValue>ProfiBus</RequiredValue>
+                                <RequiredValue>PowerLink</RequiredValue>
+                                <RequiredValue>EtherNet/IP</RequiredValue>
+                                <RequiredValue>EtherCAT</RequiredValue>
+                                <RequiredValue>SercosIII</RequiredValue>
+                                <NominalScaledType/>
+                            </Constraint>
                         </Attribute>
                         <Attribute AttributeDataType="xs:string" Name="protocol2">
                             <Description>supported ethernet protocol 2</Description>
                             <Value>EtherNet/IP</Value>
-                            <Constraint Name="protocolConstraint"/>
+                            <Constraint Name="protocolConstraint">
+                                <RequiredValue>TCP/IP</RequiredValue>
+                                <RequiredValue>ProfiNet</RequiredValue>
+                                <RequiredValue>ProfiBus</RequiredValue>
+                                <RequiredValue>PowerLink</RequiredValue>
+                                <RequiredValue>EtherNet/IP</RequiredValue>
+                                <RequiredValue>EtherCAT</RequiredValue>
+                                <RequiredValue>SercosIII</RequiredValue>
+                                <NominalScaledType/>
+                            </Constraint>
                         </Attribute>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="type">
                         <Value>100 BaseT</Value>
-                        <Constraint Name="EthernetConstraint"/>
+                        <Constraint Name="EthernetConstraint">
+                            <RequiredValue>10 BaseT</RequiredValue>
+                            <RequiredValue>100 BaseT</RequiredValue>
+                            <RequiredValue>1000 BaseT</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="IPAddress">
                         <Description>IP address of the ethernet physical device</Description>
@@ -2024,7 +2558,11 @@
             <ExternalInterface ID="d44ee7cd-b0c4-463b-84c8-1e90045a245f" Name="InstanceOfCOLLADAInterface" RefBaseClassPath="AutomationMLInterfaceClassLib/AutomationMLBaseInterface/ExternalDataConnector/COLLADAInterface">
                 <Attribute AttributeDataType="xs:string" Name="refType">
                     <Description>Reference type of the ColladaInterface</Description>
-                    <Constraint Name="refTypeConstraint"/>
+                    <Constraint Name="refTypeConstraint">
+                        <RequiredValue>explicit</RequiredValue>
+                        <RequiredValue>implicit</RequiredValue>
+                        <NominalScaledType/>
+                    </Constraint>
                 </Attribute>
                 <Attribute AttributeDataType="xs:anyURI" Name="refURI">
                     <Description>Reference URI of the ColladaInterface</Description>
@@ -2043,7 +2581,18 @@
                     <Attribute AttributeDataType="xs:string" Name="lightType">
                         <Description>Properties of light (radiation, defined for a certain range of wavelengths) and source of light</Description>
                         <Value>laser diode, red light</Value>
-                        <Constraint Name="LightTypeConstraint"/>
+                        <Constraint Name="LightTypeConstraint">
+                            <RequiredValue>blue light</RequiredValue>
+                            <RequiredValue>green light</RequiredValue>
+                            <RequiredValue>infrared light</RequiredValue>
+                            <RequiredValue>laser diode, infrared light</RequiredValue>
+                            <RequiredValue>laser diode, red light</RequiredValue>
+                            <RequiredValue>multi-colored LED</RequiredValue>
+                            <RequiredValue>red light, non-polarized</RequiredValue>
+                            <RequiredValue>red light, polarized</RequiredValue>
+                            <RequiredValue>white light</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:double" Name="relativeRepeatPrecision" Unit="Percent">
                         <Description>Output signal changes under determined conditions relating to the output signal, expressed in percent</Description>
@@ -2074,22 +2623,54 @@
                     <Attribute AttributeDataType="xs:string" Name="senseDimension">
                         <Description>Dimension that the sensor can sense</Description>
                         <Value>1D</Value>
-                        <Constraint Name="SenseDimensionConstraint"/>
+                        <Constraint Name="SenseDimensionConstraint">
+                            <RequiredValue>1D</RequiredValue>
+                            <RequiredValue>2D</RequiredValue>
+                            <RequiredValue>3D</RequiredValue>
+                            <RequiredValue>4D</RequiredValue>
+                            <RequiredValue>5D</RequiredValue>
+                            <RequiredValue>6D</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="measurementPrinciple">
                         <Description>measurement principle of the sensor</Description>
                         <Value>active</Value>
-                        <Constraint Name="MeasurementPrincipleConstraint"/>
+                        <Constraint Name="MeasurementPrincipleConstraint">
+                            <RequiredValue>active</RequiredValue>
+                            <RequiredValue>passive</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="relationToRobot">
                         <Description>relation of to robot of the sensor</Description>
                         <Value>extern</Value>
-                        <Constraint Name="RelationToRobotConstraint"/>
+                        <Constraint Name="RelationToRobotConstraint">
+                            <RequiredValue>intern</RequiredValue>
+                            <RequiredValue>extern</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="outputType">
                         <Description>Output type of the sensor</Description>
                         <Value>distance</Value>
-                        <Constraint Name="OutputTypeConstraint"/>
+                        <Constraint Name="OutputTypeConstraint">
+                            <RequiredValue>acceleration</RequiredValue>
+                            <RequiredValue>angle</RequiredValue>
+                            <RequiredValue>point cloud</RequiredValue>
+                            <RequiredValue>distance</RequiredValue>
+                            <RequiredValue>velocity</RequiredValue>
+                            <RequiredValue>image</RequiredValue>
+                            <RequiredValue>identification</RequiredValue>
+                            <RequiredValue>force</RequiredValue>
+                            <RequiredValue>torque</RequiredValue>
+                            <RequiredValue>force torque</RequiredValue>
+                            <RequiredValue>position</RequiredValue>
+                            <RequiredValue>orientation</RequiredValue>
+                            <RequiredValue>pose</RequiredValue>
+                            <RequiredValue>switch</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                 </RoleRequirements>
             </InternalElement>
@@ -2110,7 +2691,11 @@
             <ExternalInterface ID="e27f8fb1-3fcf-4f9d-87b0-dcf46f96af90" Name="CopyOfInstanceOfCOLLADAInterface" RefBaseClassPath="AutomationMLInterfaceClassLib/AutomationMLBaseInterface/ExternalDataConnector/COLLADAInterface">
                 <Attribute AttributeDataType="xs:string" Name="refType">
                     <Description>Reference type of the ColladaInterface</Description>
-                    <Constraint Name="refTypeConstraint"/>
+                    <Constraint Name="refTypeConstraint">
+                        <RequiredValue>explicit</RequiredValue>
+                        <RequiredValue>implicit</RequiredValue>
+                        <NominalScaledType/>
+                    </Constraint>
                 </Attribute>
                 <Attribute AttributeDataType="xs:anyURI" Name="refURI">
                     <Description>Reference URI of the ColladaInterface</Description>
@@ -2145,7 +2730,11 @@
                 <Attribute AttributeDataType="xs:string" Name="refType">
                     <Description>Reference type of the ColladaInterface</Description>
                     <Value>explicit</Value>
-                    <Constraint Name="refTypeConstraint"/>
+                    <Constraint Name="refTypeConstraint">
+                        <RequiredValue>explicit</RequiredValue>
+                        <RequiredValue>implicit</RequiredValue>
+                        <NominalScaledType/>
+                    </Constraint>
                 </Attribute>
                 <Attribute AttributeDataType="xs:anyURI" Name="refURI">
                     <Description>Reference URI of the ColladaInterface</Description>
@@ -2166,22 +2755,54 @@
                     <Attribute AttributeDataType="xs:string" Name="senseDimension">
                         <Description>Dimension that the sensor can sense</Description>
                         <Value>1D</Value>
-                        <Constraint Name="SenseDimensionConstraint"/>
+                        <Constraint Name="SenseDimensionConstraint">
+                            <RequiredValue>1D</RequiredValue>
+                            <RequiredValue>2D</RequiredValue>
+                            <RequiredValue>3D</RequiredValue>
+                            <RequiredValue>4D</RequiredValue>
+                            <RequiredValue>5D</RequiredValue>
+                            <RequiredValue>6D</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="measurementPrinciple">
                         <Description>measurement principle of the sensor</Description>
                         <Value>passive</Value>
-                        <Constraint Name="MeasurementPrincipleConstraint"/>
+                        <Constraint Name="MeasurementPrincipleConstraint">
+                            <RequiredValue>active</RequiredValue>
+                            <RequiredValue>passive</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="relationToRobot">
                         <Description>relation of to robot of the sensor</Description>
                         <Value>extern</Value>
-                        <Constraint Name="RelationToRobotConstraint"/>
+                        <Constraint Name="RelationToRobotConstraint">
+                            <RequiredValue>intern</RequiredValue>
+                            <RequiredValue>extern</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="outputType">
                         <Description>Output type of the sensor</Description>
                         <Value>switch</Value>
-                        <Constraint Name="OutputTypeConstraint"/>
+                        <Constraint Name="OutputTypeConstraint">
+                            <RequiredValue>acceleration</RequiredValue>
+                            <RequiredValue>angle</RequiredValue>
+                            <RequiredValue>point cloud</RequiredValue>
+                            <RequiredValue>distance</RequiredValue>
+                            <RequiredValue>velocity</RequiredValue>
+                            <RequiredValue>image</RequiredValue>
+                            <RequiredValue>identification</RequiredValue>
+                            <RequiredValue>force</RequiredValue>
+                            <RequiredValue>torque</RequiredValue>
+                            <RequiredValue>force torque</RequiredValue>
+                            <RequiredValue>position</RequiredValue>
+                            <RequiredValue>orientation</RequiredValue>
+                            <RequiredValue>pose</RequiredValue>
+                            <RequiredValue>switch</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                 </RoleRequirements>
             </InternalElement>
@@ -2229,7 +2850,11 @@
                 <Attribute AttributeDataType="xs:string" Name="refType">
                     <Description>Reference type of the ColladaInterface</Description>
                     <Value>explicit</Value>
-                    <Constraint Name="refTypeConstraint"/>
+                    <Constraint Name="refTypeConstraint">
+                        <RequiredValue>explicit</RequiredValue>
+                        <RequiredValue>implicit</RequiredValue>
+                        <NominalScaledType/>
+                    </Constraint>
                 </Attribute>
                 <Attribute AttributeDataType="xs:anyURI" Name="refURI">
                     <Description>Reference URI of the ColladaInterface</Description>
@@ -2278,7 +2903,12 @@
                         <Attribute AttributeDataType="xs:string" Name="protocol1">
                             <Description>supported serial protocol 1</Description>
                             <Value>RS232</Value>
-                            <Constraint Name="protocolConstraint"/>
+                            <Constraint Name="protocolConstraint">
+                                <RequiredValue>RS232</RequiredValue>
+                                <RequiredValue>RS422</RequiredValue>
+                                <RequiredValue>RS485</RequiredValue>
+                                <NominalScaledType/>
+                            </Constraint>
                         </Attribute>
                     </Attribute>
                 </RoleRequirements>
@@ -2301,7 +2931,11 @@
                 <Attribute AttributeDataType="xs:string" Name="refType">
                     <Description>Reference type of the ColladaInterface</Description>
                     <Value>explicit</Value>
-                    <Constraint Name="refTypeConstraint"/>
+                    <Constraint Name="refTypeConstraint">
+                        <RequiredValue>explicit</RequiredValue>
+                        <RequiredValue>implicit</RequiredValue>
+                        <NominalScaledType/>
+                    </Constraint>
                 </Attribute>
                 <Attribute AttributeDataType="xs:anyURI" Name="refURI">
                     <Description>Reference URI of the ColladaInterface</Description>
@@ -2468,7 +3102,11 @@
                 <Attribute AttributeDataType="xs:string" Name="refType">
                     <Description>Reference type of the ColladaInterface</Description>
                     <Value>explicit</Value>
-                    <Constraint Name="refTypeConstraint"/>
+                    <Constraint Name="refTypeConstraint">
+                        <RequiredValue>explicit</RequiredValue>
+                        <RequiredValue>implicit</RequiredValue>
+                        <NominalScaledType/>
+                    </Constraint>
                 </Attribute>
                 <Attribute AttributeDataType="xs:anyURI" Name="refURI">
                     <Description>Reference URI of the ColladaInterface</Description>
@@ -2606,22 +3244,54 @@
                     <Attribute AttributeDataType="xs:string" Name="senseDimension">
                         <Description>Dimension that the sensor can sense</Description>
                         <Value>6D</Value>
-                        <Constraint Name="SenseDimensionConstraint"/>
+                        <Constraint Name="SenseDimensionConstraint">
+                            <RequiredValue>1D</RequiredValue>
+                            <RequiredValue>2D</RequiredValue>
+                            <RequiredValue>3D</RequiredValue>
+                            <RequiredValue>4D</RequiredValue>
+                            <RequiredValue>5D</RequiredValue>
+                            <RequiredValue>6D</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="measurementPrinciple">
                         <Description>measurement principle of the sensor</Description>
                         <Value>passive</Value>
-                        <Constraint Name="MeasurementPrincipleConstraint"/>
+                        <Constraint Name="MeasurementPrincipleConstraint">
+                            <RequiredValue>active</RequiredValue>
+                            <RequiredValue>passive</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="relationToRobot">
                         <Description>relation of to robot of the sensor</Description>
                         <Value>intern</Value>
-                        <Constraint Name="RelationToRobotConstraint"/>
+                        <Constraint Name="RelationToRobotConstraint">
+                            <RequiredValue>intern</RequiredValue>
+                            <RequiredValue>extern</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="outputType">
                         <Description>Output type of the sensor</Description>
                         <Value>force torque</Value>
-                        <Constraint Name="OutputTypeConstraint"/>
+                        <Constraint Name="OutputTypeConstraint">
+                            <RequiredValue>acceleration</RequiredValue>
+                            <RequiredValue>angle</RequiredValue>
+                            <RequiredValue>point cloud</RequiredValue>
+                            <RequiredValue>distance</RequiredValue>
+                            <RequiredValue>velocity</RequiredValue>
+                            <RequiredValue>image</RequiredValue>
+                            <RequiredValue>identification</RequiredValue>
+                            <RequiredValue>force</RequiredValue>
+                            <RequiredValue>torque</RequiredValue>
+                            <RequiredValue>force torque</RequiredValue>
+                            <RequiredValue>position</RequiredValue>
+                            <RequiredValue>orientation</RequiredValue>
+                            <RequiredValue>pose</RequiredValue>
+                            <RequiredValue>switch</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                 </RoleRequirements>
             </InternalElement>
@@ -2630,22 +3300,54 @@
                     <Attribute AttributeDataType="xs:string" Name="senseDimension">
                         <Description>Dimension that the sensor can sense</Description>
                         <Value>6D</Value>
-                        <Constraint Name="SenseDimensionConstraint"/>
+                        <Constraint Name="SenseDimensionConstraint">
+                            <RequiredValue>1D</RequiredValue>
+                            <RequiredValue>2D</RequiredValue>
+                            <RequiredValue>3D</RequiredValue>
+                            <RequiredValue>4D</RequiredValue>
+                            <RequiredValue>5D</RequiredValue>
+                            <RequiredValue>6D</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="measurementPrinciple">
                         <Description>measurement principle of the sensor</Description>
                         <Value>passive</Value>
-                        <Constraint Name="MeasurementPrincipleConstraint"/>
+                        <Constraint Name="MeasurementPrincipleConstraint">
+                            <RequiredValue>active</RequiredValue>
+                            <RequiredValue>passive</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="relationToRobot">
                         <Description>relation of to robot of the sensor</Description>
                         <Value>intern</Value>
-                        <Constraint Name="RelationToRobotConstraint"/>
+                        <Constraint Name="RelationToRobotConstraint">
+                            <RequiredValue>intern</RequiredValue>
+                            <RequiredValue>extern</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="outputType">
                         <Description>Output type of the sensor</Description>
                         <Value>force torque</Value>
-                        <Constraint Name="OutputTypeConstraint"/>
+                        <Constraint Name="OutputTypeConstraint">
+                            <RequiredValue>acceleration</RequiredValue>
+                            <RequiredValue>angle</RequiredValue>
+                            <RequiredValue>point cloud</RequiredValue>
+                            <RequiredValue>distance</RequiredValue>
+                            <RequiredValue>velocity</RequiredValue>
+                            <RequiredValue>image</RequiredValue>
+                            <RequiredValue>identification</RequiredValue>
+                            <RequiredValue>force</RequiredValue>
+                            <RequiredValue>torque</RequiredValue>
+                            <RequiredValue>force torque</RequiredValue>
+                            <RequiredValue>position</RequiredValue>
+                            <RequiredValue>orientation</RequiredValue>
+                            <RequiredValue>pose</RequiredValue>
+                            <RequiredValue>switch</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                 </RoleRequirements>
             </InternalElement>
@@ -2654,22 +3356,54 @@
                     <Attribute AttributeDataType="xs:string" Name="senseDimension">
                         <Description>Dimension that the sensor can sense</Description>
                         <Value>6D</Value>
-                        <Constraint Name="SenseDimensionConstraint"/>
+                        <Constraint Name="SenseDimensionConstraint">
+                            <RequiredValue>1D</RequiredValue>
+                            <RequiredValue>2D</RequiredValue>
+                            <RequiredValue>3D</RequiredValue>
+                            <RequiredValue>4D</RequiredValue>
+                            <RequiredValue>5D</RequiredValue>
+                            <RequiredValue>6D</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="measurementPrinciple">
                         <Description>measurement principle of the sensor</Description>
                         <Value>passive</Value>
-                        <Constraint Name="MeasurementPrincipleConstraint"/>
+                        <Constraint Name="MeasurementPrincipleConstraint">
+                            <RequiredValue>active</RequiredValue>
+                            <RequiredValue>passive</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="relationToRobot">
                         <Description>relation of to robot of the sensor</Description>
                         <Value>intern</Value>
-                        <Constraint Name="RelationToRobotConstraint"/>
+                        <Constraint Name="RelationToRobotConstraint">
+                            <RequiredValue>intern</RequiredValue>
+                            <RequiredValue>extern</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="outputType">
                         <Description>Output type of the sensor</Description>
                         <Value>force torque</Value>
-                        <Constraint Name="OutputTypeConstraint"/>
+                        <Constraint Name="OutputTypeConstraint">
+                            <RequiredValue>acceleration</RequiredValue>
+                            <RequiredValue>angle</RequiredValue>
+                            <RequiredValue>point cloud</RequiredValue>
+                            <RequiredValue>distance</RequiredValue>
+                            <RequiredValue>velocity</RequiredValue>
+                            <RequiredValue>image</RequiredValue>
+                            <RequiredValue>identification</RequiredValue>
+                            <RequiredValue>force</RequiredValue>
+                            <RequiredValue>torque</RequiredValue>
+                            <RequiredValue>force torque</RequiredValue>
+                            <RequiredValue>position</RequiredValue>
+                            <RequiredValue>orientation</RequiredValue>
+                            <RequiredValue>pose</RequiredValue>
+                            <RequiredValue>switch</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                 </RoleRequirements>
             </InternalElement>
@@ -2678,22 +3412,54 @@
                     <Attribute AttributeDataType="xs:string" Name="senseDimension">
                         <Description>Dimension that the sensor can sense</Description>
                         <Value>6D</Value>
-                        <Constraint Name="SenseDimensionConstraint"/>
+                        <Constraint Name="SenseDimensionConstraint">
+                            <RequiredValue>1D</RequiredValue>
+                            <RequiredValue>2D</RequiredValue>
+                            <RequiredValue>3D</RequiredValue>
+                            <RequiredValue>4D</RequiredValue>
+                            <RequiredValue>5D</RequiredValue>
+                            <RequiredValue>6D</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="measurementPrinciple">
                         <Description>measurement principle of the sensor</Description>
                         <Value>passive</Value>
-                        <Constraint Name="MeasurementPrincipleConstraint"/>
+                        <Constraint Name="MeasurementPrincipleConstraint">
+                            <RequiredValue>active</RequiredValue>
+                            <RequiredValue>passive</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="relationToRobot">
                         <Description>relation of to robot of the sensor</Description>
                         <Value>intern</Value>
-                        <Constraint Name="RelationToRobotConstraint"/>
+                        <Constraint Name="RelationToRobotConstraint">
+                            <RequiredValue>intern</RequiredValue>
+                            <RequiredValue>extern</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="outputType">
                         <Description>Output type of the sensor</Description>
                         <Value>force torque</Value>
-                        <Constraint Name="OutputTypeConstraint"/>
+                        <Constraint Name="OutputTypeConstraint">
+                            <RequiredValue>acceleration</RequiredValue>
+                            <RequiredValue>angle</RequiredValue>
+                            <RequiredValue>point cloud</RequiredValue>
+                            <RequiredValue>distance</RequiredValue>
+                            <RequiredValue>velocity</RequiredValue>
+                            <RequiredValue>image</RequiredValue>
+                            <RequiredValue>identification</RequiredValue>
+                            <RequiredValue>force</RequiredValue>
+                            <RequiredValue>torque</RequiredValue>
+                            <RequiredValue>force torque</RequiredValue>
+                            <RequiredValue>position</RequiredValue>
+                            <RequiredValue>orientation</RequiredValue>
+                            <RequiredValue>pose</RequiredValue>
+                            <RequiredValue>switch</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                 </RoleRequirements>
             </InternalElement>
@@ -2702,22 +3468,54 @@
                     <Attribute AttributeDataType="xs:string" Name="senseDimension">
                         <Description>Dimension that the sensor can sense</Description>
                         <Value>6D</Value>
-                        <Constraint Name="SenseDimensionConstraint"/>
+                        <Constraint Name="SenseDimensionConstraint">
+                            <RequiredValue>1D</RequiredValue>
+                            <RequiredValue>2D</RequiredValue>
+                            <RequiredValue>3D</RequiredValue>
+                            <RequiredValue>4D</RequiredValue>
+                            <RequiredValue>5D</RequiredValue>
+                            <RequiredValue>6D</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="measurementPrinciple">
                         <Description>measurement principle of the sensor</Description>
                         <Value>passive</Value>
-                        <Constraint Name="MeasurementPrincipleConstraint"/>
+                        <Constraint Name="MeasurementPrincipleConstraint">
+                            <RequiredValue>active</RequiredValue>
+                            <RequiredValue>passive</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="relationToRobot">
                         <Description>relation of to robot of the sensor</Description>
                         <Value>intern</Value>
-                        <Constraint Name="RelationToRobotConstraint"/>
+                        <Constraint Name="RelationToRobotConstraint">
+                            <RequiredValue>intern</RequiredValue>
+                            <RequiredValue>extern</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="outputType">
                         <Description>Output type of the sensor</Description>
                         <Value>force torque</Value>
-                        <Constraint Name="OutputTypeConstraint"/>
+                        <Constraint Name="OutputTypeConstraint">
+                            <RequiredValue>acceleration</RequiredValue>
+                            <RequiredValue>angle</RequiredValue>
+                            <RequiredValue>point cloud</RequiredValue>
+                            <RequiredValue>distance</RequiredValue>
+                            <RequiredValue>velocity</RequiredValue>
+                            <RequiredValue>image</RequiredValue>
+                            <RequiredValue>identification</RequiredValue>
+                            <RequiredValue>force</RequiredValue>
+                            <RequiredValue>torque</RequiredValue>
+                            <RequiredValue>force torque</RequiredValue>
+                            <RequiredValue>position</RequiredValue>
+                            <RequiredValue>orientation</RequiredValue>
+                            <RequiredValue>pose</RequiredValue>
+                            <RequiredValue>switch</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                 </RoleRequirements>
             </InternalElement>
@@ -2726,22 +3524,54 @@
                     <Attribute AttributeDataType="xs:string" Name="senseDimension">
                         <Description>Dimension that the sensor can sense</Description>
                         <Value>6D</Value>
-                        <Constraint Name="SenseDimensionConstraint"/>
+                        <Constraint Name="SenseDimensionConstraint">
+                            <RequiredValue>1D</RequiredValue>
+                            <RequiredValue>2D</RequiredValue>
+                            <RequiredValue>3D</RequiredValue>
+                            <RequiredValue>4D</RequiredValue>
+                            <RequiredValue>5D</RequiredValue>
+                            <RequiredValue>6D</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="measurementPrinciple">
                         <Description>measurement principle of the sensor</Description>
                         <Value>passive</Value>
-                        <Constraint Name="MeasurementPrincipleConstraint"/>
+                        <Constraint Name="MeasurementPrincipleConstraint">
+                            <RequiredValue>active</RequiredValue>
+                            <RequiredValue>passive</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="relationToRobot">
                         <Description>relation of to robot of the sensor</Description>
                         <Value>intern</Value>
-                        <Constraint Name="RelationToRobotConstraint"/>
+                        <Constraint Name="RelationToRobotConstraint">
+                            <RequiredValue>intern</RequiredValue>
+                            <RequiredValue>extern</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="outputType">
                         <Description>Output type of the sensor</Description>
                         <Value>force torque</Value>
-                        <Constraint Name="OutputTypeConstraint"/>
+                        <Constraint Name="OutputTypeConstraint">
+                            <RequiredValue>acceleration</RequiredValue>
+                            <RequiredValue>angle</RequiredValue>
+                            <RequiredValue>point cloud</RequiredValue>
+                            <RequiredValue>distance</RequiredValue>
+                            <RequiredValue>velocity</RequiredValue>
+                            <RequiredValue>image</RequiredValue>
+                            <RequiredValue>identification</RequiredValue>
+                            <RequiredValue>force</RequiredValue>
+                            <RequiredValue>torque</RequiredValue>
+                            <RequiredValue>force torque</RequiredValue>
+                            <RequiredValue>position</RequiredValue>
+                            <RequiredValue>orientation</RequiredValue>
+                            <RequiredValue>pose</RequiredValue>
+                            <RequiredValue>switch</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                 </RoleRequirements>
             </InternalElement>
@@ -2750,22 +3580,54 @@
                     <Attribute AttributeDataType="xs:string" Name="senseDimension">
                         <Description>Dimension that the sensor can sense</Description>
                         <Value>6D</Value>
-                        <Constraint Name="SenseDimensionConstraint"/>
+                        <Constraint Name="SenseDimensionConstraint">
+                            <RequiredValue>1D</RequiredValue>
+                            <RequiredValue>2D</RequiredValue>
+                            <RequiredValue>3D</RequiredValue>
+                            <RequiredValue>4D</RequiredValue>
+                            <RequiredValue>5D</RequiredValue>
+                            <RequiredValue>6D</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="measurementPrinciple">
                         <Description>measurement principle of the sensor</Description>
                         <Value>passive</Value>
-                        <Constraint Name="MeasurementPrincipleConstraint"/>
+                        <Constraint Name="MeasurementPrincipleConstraint">
+                            <RequiredValue>active</RequiredValue>
+                            <RequiredValue>passive</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="relationToRobot">
                         <Description>relation of to robot of the sensor</Description>
                         <Value>intern</Value>
-                        <Constraint Name="RelationToRobotConstraint"/>
+                        <Constraint Name="RelationToRobotConstraint">
+                            <RequiredValue>intern</RequiredValue>
+                            <RequiredValue>extern</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="outputType">
                         <Description>Output type of the sensor</Description>
                         <Value>force torque</Value>
-                        <Constraint Name="OutputTypeConstraint"/>
+                        <Constraint Name="OutputTypeConstraint">
+                            <RequiredValue>acceleration</RequiredValue>
+                            <RequiredValue>angle</RequiredValue>
+                            <RequiredValue>point cloud</RequiredValue>
+                            <RequiredValue>distance</RequiredValue>
+                            <RequiredValue>velocity</RequiredValue>
+                            <RequiredValue>image</RequiredValue>
+                            <RequiredValue>identification</RequiredValue>
+                            <RequiredValue>force</RequiredValue>
+                            <RequiredValue>torque</RequiredValue>
+                            <RequiredValue>force torque</RequiredValue>
+                            <RequiredValue>position</RequiredValue>
+                            <RequiredValue>orientation</RequiredValue>
+                            <RequiredValue>pose</RequiredValue>
+                            <RequiredValue>switch</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                 </RoleRequirements>
             </InternalElement>
@@ -2776,13 +3638,28 @@
                         <Attribute AttributeDataType="xs:string" Name="protocol1">
                             <Description>supported ethernet protocol 1</Description>
                             <Value>TCP/IE</Value>
-                            <Constraint Name="protocolConstraint"/>
+                            <Constraint Name="protocolConstraint">
+                                <RequiredValue>TCP/IP</RequiredValue>
+                                <RequiredValue>UDP</RequiredValue>
+                                <RequiredValue>ProfiNet</RequiredValue>
+                                <RequiredValue>ProfiBus</RequiredValue>
+                                <RequiredValue>PowerLink</RequiredValue>
+                                <RequiredValue>EtherNet/IP</RequiredValue>
+                                <RequiredValue>EtherCAT</RequiredValue>
+                                <RequiredValue>SercosIII</RequiredValue>
+                                <NominalScaledType/>
+                            </Constraint>
                         </Attribute>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="type">
                         <Description>Type of the ethernet communication</Description>
                         <Value>100 BaseT</Value>
-                        <Constraint Name="EthernetConstraint"/>
+                        <Constraint Name="EthernetConstraint">
+                            <RequiredValue>10 BaseT</RequiredValue>
+                            <RequiredValue>100 BaseT</RequiredValue>
+                            <RequiredValue>1000 BaseT</RequiredValue>
+                            <NominalScaledType/>
+                        </Constraint>
                     </Attribute>
                     <Attribute AttributeDataType="xs:string" Name="IPAddress">
                         <Description>IP address of the ethernet physical device</Description>

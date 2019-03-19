@@ -1,6 +1,8 @@
 package translation.complex;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.emf.ecore.xml.type.AnyType;
@@ -23,9 +25,10 @@ import CAEX215.OrdinalScaledTypeType;
 import CAEX215.RoleClassType;
 import CAEX215.SystemUnitClassType;
 import CAEX215.util.AMLHelperFunctions;
-import concept.model.AMLConceptAttributes;
-import concept.model.AMLConceptModel;
+import concept.model.GenericAMLConceptModel;
+import concept.model.AMLConceptConfig;
 import concept.tree.GenericTreeNode;
+import concept.util.GenericAMLConceptModelUtils;
 import constants.AMLObjectPropertyIRIs;
 import constants.Consts;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
@@ -35,24 +38,27 @@ public class AML2OWLConverter {
 	
 	OWLDataFactory owlFactory = new OWLDataFactoryImpl();
 	
-	Set<GenericTreeNode<AMLConceptModel>> done = new HashSet<GenericTreeNode<AMLConceptModel>>();
+//	Set<GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>> done = new HashSet<GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>>();
 	
-	private GenericTreeNode<AMLConceptModel> findPrimaryNode (GenericTreeNode<AMLConceptModel> root) {
-		
-		for(GenericTreeNode<AMLConceptModel> node : root.getDescendantOrSelf()) {
-			// primary was a flag of nodes in AMLConceptTree (OWL tree)
-			// returned is a flag of nodes in AMLQueryModel (AML tree)
-			// they are consistent after transforming an AMLConceptTree to AMLQueryModel
-			if(node.data.getConfig().isPrimary()) {
-				return (GenericTreeNode<AMLConceptModel>) node; 
-			}
-		}
-		
-		System.err.println("Could not found the primary node in the tree of: " + root.toString());
-		return null;
-	}
+	// a hash map holding already computed owl class expressions of nodes, i.e. (node, owl)
+	Map<GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>, OWLClassExpression> done = new HashMap<GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>, OWLClassExpression>();
 	
-	private OWLClassExpression toOWLClassExpression (OWLObjectProperty property, OWLClassExpression filler, AMLConceptAttributes config) {
+//	private GenericTreeNode<AbstractAMLConceptModel<OWLAMLConceptConfig>> findPrimaryNode (GenericTreeNode<AbstractAMLConceptModel<OWLAMLConceptConfig>> genericTreeNode) {
+//		
+//		for(GenericTreeNode<AbstractAMLConceptModel<OWLAMLConceptConfig>> node : genericTreeNode.getDescendantOrSelf()) {
+//			// primary was a flag of nodes in AMLConceptTree (OWL tree)
+//			// returned is a flag of nodes in AMLQueryModel (AML tree)
+//			// they are consistent after transforming an AMLConceptTree to AMLQueryModel
+//			if(node.data.getConfig().isPrimary()) {
+//				return (GenericTreeNode<AbstractAMLConceptModel<OWLAMLConceptConfig>>) node; 
+//			}
+//		}
+//		
+//		System.err.println("Could not found the primary node in the tree of: " + genericTreeNode.toString());
+//		return null;
+//	}
+	
+	private OWLClassExpression toOWLClassExpression (OWLObjectProperty property, OWLClassExpression filler, AMLConceptConfig config) {
 
 		OWLClassExpression ce = null;
 		
@@ -128,12 +134,12 @@ public class AML2OWLConverter {
 		return ce;
 	}
 	
-	private String getDataPropertyName (GenericTreeNode<AMLConceptModel> node) {
+	private String getDataPropertyName (GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> node) {
 		
 		String name = "";
 		if(node.data.getObj() instanceof AttributeType) {
 			if(node.getParent() != null)
-				name = getDataPropertyName((GenericTreeNode<AMLConceptModel>) node.getParent()) + "_" + node.data.getObj().getName();
+				name = getDataPropertyName((GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>) node.getParent()) + "_" + node.data.getObj().getName();
 			else
 				name = node.data.getObj().getName();
 		}
@@ -149,7 +155,7 @@ public class AML2OWLConverter {
 	 * @param config
 	 * @return
 	 */
-	private OWLClassExpression tryBuildComplement (OWLClassExpression ce, AMLConceptAttributes config) {
+	private OWLClassExpression tryBuildComplement (OWLClassExpression ce, AMLConceptConfig config) {
 //		if(config.isNegated() && !(config.getMinCardinality() == 0 && config.getMaxCardinality() == 0))
 //			return owlFactory.getOWLObjectComplementOf(ce);
 //		if(!config.isNegated() && (config.getMinCardinality() == 0 && config.getMaxCardinality() == 0))
@@ -164,11 +170,11 @@ public class AML2OWLConverter {
 	 * @param node
 	 * @return OWL class expression for node
 	 */
-	private OWLClassExpression toOWLClassExpressionRecursive (GenericTreeNode<AMLConceptModel> node, boolean isEntryPoint) {
+	private OWLClassExpression toOWLClassExpressionRecursive (GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> node, boolean isEntryPoint) {
 				
 		OWLClassExpression ce = null;
 		CAEXObject obj = node.data.getObj();
-		AMLConceptAttributes config = node.data.getConfig();		
+		AMLConceptConfig config = (AMLConceptConfig) node.data.getConfig();		
 		
 		// attributes are mapped to data properties with value constraints
 		// TODO: how to handle sub attributes?
@@ -270,8 +276,8 @@ public class AML2OWLConverter {
 //				ce = owlFactory.getOWLDataSomeValuesFrom(dataProperty, owlFactory.getTopDatatype());
 //			}
 			
-			for(GenericTreeNode<AMLConceptModel> child : node.getChildren()) {
-				GenericTreeNode<AMLConceptModel> cNode = (GenericTreeNode<AMLConceptModel>) child;
+			for(GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> child : node.getChildren()) {
+				GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> cNode = (GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>) child;
 				OWLClassExpression childCE = toOWLClassExpressionRecursive(cNode, false);
 				if(ce == null)
 					ce = childCE;
@@ -292,7 +298,7 @@ public class AML2OWLConverter {
 //				if(config.isNegated())
 //					ce = owlFactory.getOWLObjectComplementOf(ce);	
 //			}									
-		} // end attribute: no sub attributes handled
+		} // end attribute
 		
 		// External interfaces are mapped to object relations to its referenced class
 		else if(obj instanceof ExternalInterfaceType) {
@@ -320,18 +326,31 @@ public class AML2OWLConverter {
 			}		
 			
 			// extend the object property with attributes, eis and sub ies
-			for(GenericTreeNode<AMLConceptModel> child : node.getChildren()) {			
-				GenericTreeNode<AMLConceptModel> cNode = (GenericTreeNode<AMLConceptModel>) child;
+			for(GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> child : node.getChildren()) {			
+				GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> cNode = (GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>) child;
 				// get rid of already handled nodes
 //				if(!cNode.isConverted) {
-				if(!done.contains(cNode)) {
-					OWLClassExpression childCE = toOWLClassExpressionRecursive(cNode, false);
-					
-					if(filler == null)
-						filler = childCE;
-					else
-						filler = owlFactory.getOWLObjectIntersectionOf(filler, childCE);	
-				}				
+//				if(!done.contains(cNode)) {
+//					OWLClassExpression childCE = toOWLClassExpressionRecursive(cNode, false);
+//					
+//					if(filler == null)
+//						filler = childCE;
+//					else
+//						filler = owlFactory.getOWLObjectIntersectionOf(filler, childCE);	
+//				}
+				
+				OWLClassExpression childCE = null;
+				if(!done.containsKey(cNode)) {
+					childCE = toOWLClassExpressionRecursive(cNode, false);					
+				}else {
+					childCE = toOWLClassExpressionRecursive(cNode, false);
+				}
+				
+				if(filler == null)
+					filler = childCE;
+				else
+					filler = owlFactory.getOWLObjectIntersectionOf(filler, childCE);
+
 			}		
 			
 			// make the object property using the final filler
@@ -374,16 +393,27 @@ public class AML2OWLConverter {
 				ce = parent;
 			
 			// add sub elements (can only be attributes) as conditions
-			for(GenericTreeNode<AMLConceptModel> child : node.getChildren()) {
-				GenericTreeNode<AMLConceptModel> cNode = (GenericTreeNode<AMLConceptModel>) child;
+			for(GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> child : node.getChildren()) {
+				GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> cNode = (GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>) child;
 //				if(!cNode.isConverted) {
-				if(!done.contains(cNode)) {
-					OWLClassExpression childCE = toOWLClassExpressionRecursive(cNode, false);
-					if(ce == null)
-						ce = childCE;
-					else
-						ce = owlFactory.getOWLObjectIntersectionOf(ce, childCE);
+//				if(!done.contains(cNode)) {
+//					OWLClassExpression childCE = toOWLClassExpressionRecursive(cNode, false);
+//					if(ce == null)
+//						ce = childCE;
+//					else
+//						ce = owlFactory.getOWLObjectIntersectionOf(ce, childCE);
+//				}
+				OWLClassExpression childCE = null;
+				if(!done.containsKey(cNode)) {
+					childCE = toOWLClassExpressionRecursive(cNode, false);					
+				}else {
+					childCE = toOWLClassExpressionRecursive(cNode, false);
 				}
+				
+				if(ce == null)
+					ce = childCE;
+				else
+					ce = owlFactory.getOWLObjectIntersectionOf(ce, childCE);
 			}			
 		}// end IC
 		
@@ -417,16 +447,27 @@ public class AML2OWLConverter {
 				ce = parent;
 			
 			// add sub elements as conditions: attributes, EIs
-			for(GenericTreeNode<AMLConceptModel> child : node.getChildren()) {
-				GenericTreeNode<AMLConceptModel> cNode = (GenericTreeNode<AMLConceptModel>) child;
+			for(GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> child : node.getChildren()) {
+				GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> cNode = (GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>) child;
 //				if(!cNode.isConverted) {
-				if(!done.contains(cNode)) {
-					OWLClassExpression childCE = toOWLClassExpressionRecursive(cNode, false);
-					if(ce == null)
-						ce = childCE;
-					else
-						ce = owlFactory.getOWLObjectIntersectionOf(ce, childCE);
+//				if(!done.contains(cNode)) {
+//					OWLClassExpression childCE = toOWLClassExpressionRecursive(cNode, false);
+//					if(ce == null)
+//						ce = childCE;
+//					else
+//						ce = owlFactory.getOWLObjectIntersectionOf(ce, childCE);
+//				}
+				OWLClassExpression childCE = null;
+				if(!done.containsKey(cNode)) {
+					childCE = toOWLClassExpressionRecursive(cNode, false);					
+				}else {
+					childCE = toOWLClassExpressionRecursive(cNode, false);
 				}
+				
+				if(ce == null)
+					ce = childCE;
+				else
+					ce = owlFactory.getOWLObjectIntersectionOf(ce, childCE);
 			}			
 		} // end RC
 		
@@ -463,17 +504,29 @@ public class AML2OWLConverter {
 			}
 			
 			// extend the object property with attributes, eis and sub ies
-			for(GenericTreeNode<AMLConceptModel> child : node.getChildren()) {
-				GenericTreeNode<AMLConceptModel> cNode = (GenericTreeNode<AMLConceptModel>) child;
+			for(GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> child : node.getChildren()) {
+				GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> cNode = (GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>) child;
 //				if(!cNode.isConverted) {
-				if(!done.contains(cNode)) {
-					OWLClassExpression childCE = toOWLClassExpressionRecursive(cNode, false);
-					
-					if(filler == null)
-						filler = childCE;
-					else
-						filler = owlFactory.getOWLObjectIntersectionOf(filler, childCE);
+//				if(!done.contains(cNode)) {
+//					OWLClassExpression childCE = toOWLClassExpressionRecursive(cNode, false);
+//					
+//					if(filler == null)
+//						filler = childCE;
+//					else
+//						filler = owlFactory.getOWLObjectIntersectionOf(filler, childCE);
+//				}
+				
+				OWLClassExpression childCE = null;
+				if(!done.containsKey(cNode)) {
+					childCE = toOWLClassExpressionRecursive(cNode, false);					
+				}else {
+					childCE = toOWLClassExpressionRecursive(cNode, false);
 				}
+				
+				if(filler == null)
+					filler = childCE;
+				else
+					filler = owlFactory.getOWLObjectIntersectionOf(filler, childCE);
 			}		
 			
 			// make the object property using the final filler
@@ -498,31 +551,49 @@ public class AML2OWLConverter {
 			//TODO: SRC ignored
 			
 			// add sub elements as conditions: attributes, EIs, IEs
-			for(GenericTreeNode<AMLConceptModel> child : node.getChildren()) {
-				GenericTreeNode<AMLConceptModel> cNode = (GenericTreeNode<AMLConceptModel>) child;
+			for(GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> child : node.getChildren()) {
+				GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> cNode = (GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>) child;
 //				if(!cNode.isConverted) {
-				if(!done.contains(cNode)) {
-					if(child.data.getObj() instanceof AttributeType) {
-						OWLClassExpression childCE = toOWLClassExpressionRecursive(cNode, false);
-						if(ce == null)
-							ce = childCE;
-						else
-							ce = owlFactory.getOWLObjectIntersectionOf(ce, childCE);					
-					}
+//				if(!done.contains(cNode)) {
+//					if(child.data.getObj() instanceof AttributeType) {
+//						OWLClassExpression childCE = toOWLClassExpressionRecursive(cNode, false);
+//						if(ce == null)
+//							ce = childCE;
+//						else
+//							ce = owlFactory.getOWLObjectIntersectionOf(ce, childCE);					
+//					}
+//				}
+				OWLClassExpression childCE = null;
+				if(!done.containsKey(cNode)) {
+					childCE = toOWLClassExpressionRecursive(cNode, false);					
+				}else {
+					childCE = toOWLClassExpressionRecursive(cNode, false);
 				}
+				
+				if(ce == null)
+					ce = childCE;
+				else
+					ce = owlFactory.getOWLObjectIntersectionOf(ce, childCE);
 			}				
 		}
 		
-		done.add(node);
+//		if(!((AMLConceptConfig) node.data.getConfig()).isPrimary()){
+//			done.add(node);	
+//		}
+		
+		// avoid recomputation of already handled nodes
+//		done.add(node);
+		done.put(node, ce);
+		
 		return ce;
 	}
 	
-	private OWLClassExpression getParentOWLClassExpressionRec (GenericTreeNode<AMLConceptModel> node) {
+	private OWLClassExpression getParentOWLClassExpressionRec (GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> node) {
 		
 		if(node.getParent() == null)
 			return null;
 		
-		GenericTreeNode<AMLConceptModel> parent = (GenericTreeNode<AMLConceptModel>) node.getParent();
+		GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> parent = (GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>) node.getParent();
 		
 		OWLObjectProperty inverseProperty = null;
 		if(node.data.getObj() instanceof InternalElementType)
@@ -539,19 +610,21 @@ public class AML2OWLConverter {
 		OWLClassExpression filler = toOWLClassExpressionRecursive(parent, true);
 		
 		if(parent.getParent() != null) {
-			filler = owlFactory.getOWLObjectIntersectionOf(filler, getParentOWLClassExpressionRec((GenericTreeNode<AMLConceptModel>) parent.getParent()));
+			filler = owlFactory.getOWLObjectIntersectionOf(filler, getParentOWLClassExpressionRec((GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>) parent.getParent()));
 		}
 		
 		return owlFactory.getOWLObjectSomeValuesFrom(inverseProperty, filler);		
 	}
 	
-	public OWLClassExpression toOWLClassExpression (GenericTreeNode<AMLConceptModel> root) {
+	public OWLClassExpression toOWLClassExpression (GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> genericTreeNode) {
 		
-		GenericTreeNode<AMLConceptModel> primary = findPrimaryNode(root);
+//		GenericTreeNode<AbstractAMLConceptModel<OWLAMLConceptConfig>> primary = findPrimaryNode(genericTreeNode);
+		Set<GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>> primaries = GenericAMLConceptModelUtils.getPrimaryObjs(genericTreeNode);
 		
-		if(primary == null)
+		if(primaries.size() != 1)
 			return null;
 		
+		GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> primary = primaries.iterator().next();
 		// downwards traversing for the description of the primary node itself
 		OWLClassExpression primaryCE = toOWLClassExpressionRecursive(primary, true);		
 				

@@ -25,6 +25,7 @@ import org.semanticweb.owlapi.model.OWLObjectOneOf;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 
+import constants.AMLObjectPropertyIRIs;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 public class ConjunctionMinimizer implements OWLClassExpressionVisitorEx<OWLClassExpression>{
@@ -37,6 +38,7 @@ public class ConjunctionMinimizer implements OWLClassExpressionVisitorEx<OWLClas
 		return ce;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public OWLClassExpression visit(OWLObjectIntersectionOf ce) {
 		// TODO Auto-generated method stub
@@ -58,6 +60,7 @@ public class ConjunctionMinimizer implements OWLClassExpressionVisitorEx<OWLClas
 	
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public OWLClassExpression visit(OWLObjectUnionOf ce) {
 		// TODO Auto-generated method stub
@@ -78,8 +81,34 @@ public class ConjunctionMinimizer implements OWLClassExpressionVisitorEx<OWLClas
 	@Override
 	public OWLClassExpression visit(OWLObjectSomeValuesFrom ce) {
 		// TODO Auto-generated method stub
-		OWLClassExpression filler = ce.getFiller();		
-		return owlFactory.getOWLObjectSomeValuesFrom(ce.getProperty(), filler.accept(this));
+		OWLClassExpression filler = ce.getFiller();
+		
+		OWLClassExpression newFiller = filler.accept(this);
+		Set<OWLClassExpression> validFillers = new HashSet<OWLClassExpression>();
+		if(AMLObjectPropertyIRIs.IS_INTERNAL_ELEMENT_OF.toString().contains(OWLExpressionUtils.getAMLPropertyName(ce.getProperty()))) {
+			if(newFiller instanceof OWLObjectIntersectionOf) {
+				for(OWLClassExpression op : ((OWLObjectIntersectionOf) newFiller).getOperands()) {
+					if(op instanceof OWLObjectSomeValuesFrom) {
+						String opRoleName = OWLExpressionUtils.getAMLPropertyName(((OWLObjectSomeValuesFrom) op).getProperty());
+						if(!AMLObjectPropertyIRIs.HAS_INTERNAL_ELEMENT.toString().contains(opRoleName) && ((OWLObjectSomeValuesFrom) op).getFiller().equals(owlFactory.getOWLThing()))
+							validFillers.add(op);
+					}else
+						validFillers.add(op);
+				}
+			}
+		}
+		
+		OWLClassExpression finalFiller = null;
+		if(validFillers.size() > 1) {
+			finalFiller = owlFactory.getOWLObjectIntersectionOf(validFillers);
+		}else if(validFillers.size() == 1) {
+			finalFiller = validFillers.iterator().next();
+		}else if(validFillers.size() == 0) {
+			finalFiller = newFiller;
+		} 
+			
+		
+		return owlFactory.getOWLObjectSomeValuesFrom(ce.getProperty(), finalFiller);
 	}
 
 	@Override

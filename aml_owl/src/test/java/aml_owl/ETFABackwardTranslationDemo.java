@@ -20,15 +20,15 @@ import org.xml.sax.SAXException;
 
 import CAEX215.CAEXFileType;
 import CAEX215.InternalElementType;
-import concept.model.AMLConceptModel;
+import concept.model.GenericAMLConceptModel;
+import concept.model.AMLConceptConfig;
 import concept.tree.GenericTreeNode;
+import concept.util.GenericAMLConceptModelUtils;
 import constants.AMLClassIRIs;
 import importer.AMLImporter;
 import parser.AMLParser;
 import translation.complex.AML2OWLConverter;
 import translation.complex.AMLConceptTree;
-import tree.AMLConceptModelTree;
-import tree.AMLConceptModelTreeParser;
 
 public class ETFABackwardTranslationDemo{
 	
@@ -42,23 +42,23 @@ public class ETFABackwardTranslationDemo{
 		importer = new AMLImporter("CAEX215");
 		// TODO Auto-generated constructor stub
 	}
-
-	public List<AMLConceptModelTree> readModels (String conceptModelFile) throws NoSuchMethodException, SecurityException, IllegalAccessException, 
+	
+	public List<GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>> readModels (String conceptModelFile) throws NoSuchMethodException, SecurityException, IllegalAccessException, 
 	IllegalArgumentException, InvocationTargetException, ClassNotFoundException, InstantiationException, NoSuchFieldException,
 	ParserConfigurationException, SAXException, IOException, DOMException, DatatypeConfigurationException {
 
 		AMLParser parser = new AMLParser(conceptModelFile);
 		Document caex = parser.getDoc();		
 		CAEXFileType aml = (CAEXFileType) importer.doImport(caex, false);	
-		AMLConceptModelTreeParser conceptParser = new AMLConceptModelTreeParser();
+//		AMLConceptModelTreeParser conceptParser = new AMLConceptModelTreeParser();
 
-		List<AMLConceptModelTree> trees = new ArrayList<AMLConceptModelTree>();
+		List<GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>> trees = new ArrayList<GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>>();
+		GenericAMLConceptModelUtils interpreter = new GenericAMLConceptModelUtils();
 		for(InternalElementType obj : aml.getInstanceHierarchy().get(0).getInternalElement()) {
 
 			if(obj.getName().contains("Q")) {
-				GenericTreeNode<AMLConceptModel> root = conceptParser.parse(obj);
-				AMLConceptModelTree tree = new AMLConceptModelTree(root);
-				trees.add(tree);
+				GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> root = interpreter.parse(obj, AMLConceptConfig.class);
+				trees.add(root);
 			}					
 		}
 
@@ -87,6 +87,7 @@ public class ETFABackwardTranslationDemo{
 			System.out.println("\n 2.2. removed inverse roles [" +  i +  "] \n");			 
 			System.out.println(noInverse.toStringWithIndent(3));
 			
+			
 			trees.add(noInverse);
 		}
 
@@ -102,24 +103,24 @@ public class ETFABackwardTranslationDemo{
 		String acmfile = "src/test/resources/concepts.aml";
 		
 		ETFABackwardTranslationDemo tester = new ETFABackwardTranslationDemo();
-		List<AMLConceptModelTree> acms = tester.readModels(acmfile);
+		List<GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>> acms = tester.readModels(acmfile);
 
-		for(AMLConceptModelTree acm : acms) {
+		for(GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> acm : acms) {
 			if(acm.getRoot().data.getObj().getName().contains("Q")) {
 				// ======================= STEP 1: AML -> AMLQuery model ======================= //
 				System.out.println("\n============================================================" + acm.getRoot().data.getObj().getName() + "============================================================");				
 				System.out.println("\n1. First, we show the result (OWL Class) of the backward translation from AML to OWL");				
-				System.out.println("\n1.1. The AML concept model read from the file:\n");
+				System.out.println("\n1.1. The AML concept model read from the file:");
 
 				System.out.println(acm.toStringWithIndent(3));
 
-				Set<GenericTreeNode<AMLConceptModel>> primaries = acm.getPrimaryObjs();
+				Set<GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>>> primaries = GenericAMLConceptModelUtils.getPrimaryObjs(acm);
 				if(primaries.size() != 1) {
-					System.out.println("cannot transform this AMLQuery model to DL: need exactly one primary (returned) object!");
+					System.out.println("\ncannot transform this AMLQuery model to DL: need exactly one primary (returned) object!");
 					continue;
 				}
 
-				GenericTreeNode<AMLConceptModel> primary = primaries.iterator().next();				
+				GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> primary = primaries.iterator().next();
 
 				// ======================= STEP 2: AMLQuery model -> OWL ======================= //
 				System.out.println("\n1.2. The generated OWL Class Expression\n");
@@ -136,24 +137,24 @@ public class ETFABackwardTranslationDemo{
 				for(AMLConceptTree tree : trees) {
 
 					// ======================= STEP 4: AML Concept Tree -> AMLQuery model ======================= //
-					System.out.println("\n2.3. Reproduced AML concept model [" +  i +  "]\n");
+					System.out.println("\n2.3. Reproduced AML concept model [" +  i +  "]");
 
-					AMLConceptModelTree acmReproduced = new AMLConceptModelTree(AMLConceptTree.toAMLConceptModelTreeNode(tree.getRoot()));
+					GenericTreeNode<GenericAMLConceptModel<AMLConceptConfig>> acmReproduced = AMLConceptTree.toAMLConceptModelTreeNode(tree.getRoot());
 
 					System.out.println(acmReproduced.toStringWithIndent(3));
 
 					// the fusion is necessary since OWL class expressions and their AML concept trees split nested attributes and cardinalities into several expressions
 					// - the attribute frame.(x, y) will become two data properties has_frame_x and has_frame_y, which need to be fused to one CAEX attribute
 					// - the min and max cardinality of one object will become two cardinality restrictions 
-					System.out.println("\n2.4. cleaned (fused) AML concept model [" +  i +  "]\n");
+					System.out.println("\n2.4. cleaned (fused) AML concept model [" +  i +  "]");
 
-					AMLConceptModelTree.fuse(acmReproduced.getRoot());
+					GenericAMLConceptModelUtils.fuse(acmReproduced.getRoot());
 
 					System.out.println(acmReproduced.toStringWithIndent(3));
 
 					System.out.println("\n It shall be clear that the following AML concept models are equivalent:\n");
 					System.out.println(" - the original AML concept model (M) read from the file: \n\n" + acm.toStringWithIndent(3) + "\n");
-					System.out.println(" - the reproduced AML concept model as forward_translation(backward_translation(M)): \n\n" + acmReproduced.toStringWithIndent(3) + "\n");					 							
+					System.out.println(" - the reproduced AML concept model as forward_translation(backward_translation(M)):\n\n" + acmReproduced.toStringWithIndent(3) + "\n");					 							
 					i++;
 				}
 			}			

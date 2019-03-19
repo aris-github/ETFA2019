@@ -58,14 +58,23 @@ public class AMLExporter {
 	// indices for unnamed caex objects
 	int attrIdx = 0, rcIdx = 0, icIdx = 0, sucIdx = 0, ieIdx = 0, eiIdx = 0;
 	
-	public AMLExporter(CAEXFileType caex) throws ParserConfigurationException {
-		// TODO Auto-generated constructor stub
-		this.caex = caex;
-		
+//	public AMLExporter() throws ParserConfigurationException {
+//		DocumentBuilderFactory xmlFactory = DocumentBuilderFactory.newInstance();
+//		DocumentBuilder xmlBuilder = xmlFactory.newDocumentBuilder();
+//		doc = xmlBuilder.newDocument();
+//	}
+	
+	public AMLExporter() throws ParserConfigurationException {
 		DocumentBuilderFactory xmlFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder xmlBuilder = xmlFactory.newDocumentBuilder();
 		doc = xmlBuilder.newDocument();
 	}
+	
+	public AMLExporter(CAEXFileType caex) throws ParserConfigurationException {
+		this();
+		this.caex = caex;
+	}	
+
 	
 	private String fromAMLAnyType(AnyType anyType) {
 		if(anyType != null && anyType.getAnyAttribute().size() > 0) {
@@ -117,7 +126,7 @@ public class AMLExporter {
 		// value
 		if(attr.getValue() != null) {
 			Element valueNode = doc.createElement("Value");
-			valueNode.setTextContent(attr.getStringValue());
+			valueNode.setTextContent(fromAMLAnyType(attr.getValue()));
 			attrNode.appendChild(valueNode);
 		}
 		
@@ -311,17 +320,18 @@ public class AMLExporter {
 		for(SupportedRoleClassType src : ie.getSupportedRoleClass()) {
 			ieNode.appendChild(getSRCNode(src));
 		}
-		
-		// rr
-		if(ie.getRoleRequirements() != null)
-			ieNode.appendChild(getRRNode(ie.getRoleRequirements()));				
-		
+				
 		// TODO: link
 		
 		// sub ie
 		for(InternalElementType sub : ie.getInternalElement()) {
 			ieNode.appendChild(getIENode(sub));
 		}
+		
+		// rr
+		if(ie.getRoleRequirements() != null)
+			ieNode.appendChild(getRRNode(ie.getRoleRequirements()));				
+
 		
 		return ieNode;
 	}
@@ -367,8 +377,18 @@ public class AMLExporter {
 		return sucNode;
 	}
 	
-	public void write(String filename) throws ParserConfigurationException, TransformerFactoryConfigurationError, TransformerException {	
-		// root
+//	public void writeXML (List<Element> data, String filename) throws ParserConfigurationException, TransformerFactoryConfigurationError, TransformerException {
+//		Element root = getRootWithHeaders(filename);
+//		doc.appendChild(root);
+//		for(Element element : data) {
+//			doc.importNode(element, true);
+//		}
+//				
+//		write(doc, filename);
+//	}
+	
+	private Element getRootWithHeaders (String filename) {
+
 		Element root = doc.createElement("CAEXFile");
 		Attr file = doc.createAttribute("FileName");
 		file.setValue(filename.substring(filename.lastIndexOf("/")+1));
@@ -430,6 +450,17 @@ public class AMLExporter {
 		infoNode2.setAttribute("AutomationMLVersion", "2.0");
 		root.appendChild(infoNode2);
 		
+		return root;
+	}
+	
+	public void write(CAEXFileType caex, String filename) throws ParserConfigurationException, TransformerFactoryConfigurationError, TransformerException {
+		this.caex = caex;
+		write(filename);
+	}
+	
+	public void write(String filename) throws ParserConfigurationException, TransformerFactoryConfigurationError, TransformerException {	
+		// root
+		Element root = getRootWithHeaders(filename);
 		
 		// ICL
 		for(InterfaceClassLibType icl : caex.getInterfaceClassLib()) {

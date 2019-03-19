@@ -128,6 +128,7 @@ public class OWLExpressionUtils{
 		return property;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static Set<OWLClassExpression> getAtomicConcepts (OWLObjectIntersectionOf intersection) {
 		Set<OWLClassExpression> atomics = new HashSet<OWLClassExpression>();
 		
@@ -143,6 +144,7 @@ public class OWLExpressionUtils{
 		return getAtomicConcepts(intersection).isEmpty();
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static String getAMLPropertyName (OWLPropertyExpression property) {
 		String name = null;
 		int numObjProperties = property.getObjectPropertiesInSignature().size();
@@ -165,6 +167,7 @@ public class OWLExpressionUtils{
 		return name;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static OWLClass getAMLClass (OWLClassExpression ce) {
 		if(ce.isClassExpressionLiteral()) {
 			OWLClass oc = ce.getClassesInSignature().iterator().next();
@@ -180,6 +183,7 @@ public class OWLExpressionUtils{
 		return getAMLClass(ce).getIRI().getShortForm();
 	}		
 	
+	@SuppressWarnings("deprecation")
 	public static String getAMLLibName (OWLClass c) {
 		for(OWLAnnotationProperty ap : c.getAnnotationPropertiesInSignature()) {
 			if(ap.getIRI().equals(AMLAnnotationPropertyIRIs.IN_LIB)) {
@@ -189,6 +193,7 @@ public class OWLExpressionUtils{
 		return null;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static String getAMLAttributeName (OWLDataPropertyExpression property) {
 //		String fullname = getAMLPropertyName(property);
 		
@@ -200,8 +205,9 @@ public class OWLExpressionUtils{
 		IRI iri = property.getDataPropertiesInSignature().iterator().next().getIRI();
 		return AttributeHandler.deserializeIRI(iri);
 	}
-	
+		
 	// get the IRI of an OWLIndividual
+	@SuppressWarnings("deprecation")
 	public static String getAMLId (OWLIndividual individual) {
 		
 //		String name = individual.getIndividualsInSignature().iterator().next().getIRI().getShortForm();
@@ -221,6 +227,7 @@ public class OWLExpressionUtils{
 		return false;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static boolean hasAMLInverseRole(OWLClassExpression ce) {
 
 		for(OWLClassExpression child : ce.getNestedClassExpressions()) {
@@ -233,6 +240,7 @@ public class OWLExpressionUtils{
 		return false;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static Set<OWLClassExpression> getAllConjunctions (OWLObjectIntersectionOf conj) {
 		Set<OWLClassExpression> operands = new HashSet<OWLClassExpression>();
 		for(OWLClassExpression op : conj.getOperands()) {
