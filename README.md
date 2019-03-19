@@ -21,8 +21,8 @@ Then import the projects and use Maven to compile each of them in following sequ
 
 There are two test programs written for the ETFA paper
 
-* ETFAForwardTranslationDemo
-* ETFABackwardTranslationDemo
+* `ETFAForwardTranslationDemo`
+* `ETFABackwardTranslationDemo`
 
 To test the results as published in the paper, find the test programs in Eclipse under *aml_owl/src/test/java/aml_owl/*, and run them as Java Applications
 
